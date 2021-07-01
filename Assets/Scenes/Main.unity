@@ -1990,6 +1990,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Total Mechanical Energy
       m_Image: {fileID: 0}
+    - m_Text: x Acceleration
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -4785,6 +4787,8 @@ MonoBehaviour:
     - m_Text: 'Gravitational Potential Energy '
       m_Image: {fileID: 0}
     - m_Text: Total Mechanical Energy
+      m_Image: {fileID: 0}
+    - m_Text: x Acceleration
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

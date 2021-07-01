@@ -62,6 +62,11 @@ public class CameraControls : MonoBehaviour
                 Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, yBoundMax, -1);
         }
 
+        if (Input.GetKey(KeyCode.E))
+            Camera.main.orthographicSize -= 0.1f;
+        else if (Input.GetKey(KeyCode.Q))
+            Camera.main.orthographicSize += 0.1f;
+
         Camera.main.orthographicSize += -Input.mouseScrollDelta.y;
         if (Camera.main.orthographicSize < 1f)
             Camera.main.orthographicSize = 1f;

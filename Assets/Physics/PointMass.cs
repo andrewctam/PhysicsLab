@@ -13,6 +13,7 @@ public class PointMass : MonoBehaviour
     public bool isPressed, started, canRotate, canTranslateX, canTranslateY, isGraphing, draggable;
     public Graph grapher;
     public Color defaultColor, alphaDefaultColor;
+    public Vector2 currentVelocity, velocityLastFrame, acceleration;
 
     // Start is called before the first frame update
     void Start()
@@ -32,12 +33,16 @@ public class PointMass : MonoBehaviour
     
     }
     void FixedUpdate() {
+        velocityLastFrame = currentVelocity;
+        currentVelocity = rb.velocity;
+        acceleration = (currentVelocity - velocityLastFrame) / Time.deltaTime;
         if (started)
             rb.AddForce(acc0 * rb.mass);
     }
     // Update is called once per frame
     void Update()
     {   
+
         if (isGraphing) {
             if (create.graphBar.activeSelf && create.current == ID) {
                 xAxisIndex = grapher.xAxisDropdown.GetComponent<Dropdown>().value;
@@ -107,6 +112,7 @@ public class PointMass : MonoBehaviour
             case 6: return (0.5f) * rb.mass * rb.velocity.magnitude * rb.velocity.magnitude;
             case 7: return rb.mass * Physics2D.gravity.y * transform.position.y * -1;
             case 8: return (0.5f) * rb.mass * rb.velocity.magnitude * rb.velocity.magnitude + rb.mass * Physics2D.gravity.y * transform.position.y * -1;
+            case 9: return acceleration.x;
             default: return 0;
         }
     }

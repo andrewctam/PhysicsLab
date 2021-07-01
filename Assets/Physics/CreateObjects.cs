@@ -53,9 +53,6 @@ public class CreateObjects : MonoBehaviour
         }
         
 
-        if (Input.GetKeyDown(KeyCode.Q))
-            newAnnouncement(elapsedTime + "", 180);
-    
         if (Input.GetKeyDown(KeyCode.R)) {
             elapsedTime = 0f;
             started = false;
