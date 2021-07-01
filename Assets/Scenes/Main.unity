@@ -1984,13 +1984,15 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Speed (m/s)
       m_Image: {fileID: 0}
+    - m_Text: x Acceleration
+      m_Image: {fileID: 0}
+    - m_Text: y Acceleration
+      m_Image: {fileID: 0}
     - m_Text: Translational Kinetic Energy (J)
       m_Image: {fileID: 0}
     - m_Text: 'Gravitational Potential Energy '
       m_Image: {fileID: 0}
     - m_Text: Total Mechanical Energy
-      m_Image: {fileID: 0}
-    - m_Text: x Acceleration
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4782,13 +4784,15 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Speed (m/s)
       m_Image: {fileID: 0}
+    - m_Text: x Acceleration
+      m_Image: {fileID: 0}
+    - m_Text: y Acceleration
+      m_Image: {fileID: 0}
     - m_Text: Translational Kinetic Energy (J)
       m_Image: {fileID: 0}
     - m_Text: 'Gravitational Potential Energy '
       m_Image: {fileID: 0}
     - m_Text: Total Mechanical Energy
-      m_Image: {fileID: 0}
-    - m_Text: x Acceleration
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

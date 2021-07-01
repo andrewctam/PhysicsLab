@@ -109,10 +109,11 @@ public class PointMass : MonoBehaviour
             case 3: return rb.velocity.x;
             case 4: return rb.velocity.y;
             case 5: return rb.velocity.magnitude;
-            case 6: return (0.5f) * rb.mass * rb.velocity.magnitude * rb.velocity.magnitude;
-            case 7: return rb.mass * Physics2D.gravity.y * transform.position.y * -1;
-            case 8: return (0.5f) * rb.mass * rb.velocity.magnitude * rb.velocity.magnitude + rb.mass * Physics2D.gravity.y * transform.position.y * -1;
-            case 9: return acceleration.x;
+            case 6: return acceleration.x;
+            case 7: return acceleration.y;
+            case 8: return (0.5f) * rb.mass * rb.velocity.magnitude * rb.velocity.magnitude;
+            case 9: return rb.mass * Physics2D.gravity.y * transform.position.y * -1;
+            case 10: return (0.5f) * rb.mass * rb.velocity.magnitude * rb.velocity.magnitude + rb.mass * Physics2D.gravity.y * transform.position.y * -1;
             default: return 0;
         }
     }
