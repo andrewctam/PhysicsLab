@@ -9,7 +9,7 @@ public class CreateObjects : MonoBehaviour
     public GameObject announcement, pointMass, ramp, bowlingBall;
     public GameObject bar, editor, buttons, toggleX, toggleY, toggleRot, labGameObject, graphGameObject, graphButton, labBar, graphBar, graphSettings;
     public Text objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText;
-    public InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY;
+    public InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, nameInput;
     public List<GameObject> createdObjects;
     public Queue<GameObject> announcementQueue;
     public int count, current;
@@ -53,7 +53,7 @@ public class CreateObjects : MonoBehaviour
         }
         
 
-        if (Input.GetKeyDown(KeyCode.R)) {
+        if (cameraSettings.keyboardAllowed && Input.GetKeyDown(KeyCode.R)) {
             elapsedTime = 0f;
             started = false;
             startLabButtonText.text = "Start"; 
@@ -68,7 +68,7 @@ public class CreateObjects : MonoBehaviour
         }
             
             
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (cameraSettings.keyboardAllowed && Input.GetKeyDown(KeyCode.Space))
             if (started) {
                 togglePause();
             } else
@@ -113,7 +113,7 @@ public class CreateObjects : MonoBehaviour
 
 
             objectIDText.text = "Object ID: " + createdObjects[current].name;
-
+            nameInput.text = currentPointMassScript.name;
             // Update Input Fields with current info
             massInput.text = createdObjects[current].GetComponent<Rigidbody2D>().mass + "";
             heightInput.text = createdObjects[current].transform.localScale.y + "";
@@ -203,6 +203,10 @@ public class CreateObjects : MonoBehaviour
             }
             createdObjects[current].GetComponent<PointMass>().vel0 = new Vector3(x, y, 0);
         }
+    }
+
+    public void updateName() {
+        createdObjects[current].GetComponent<PointMass>().name = nameInput.text;
     }
 
     public void updateInitialAcc() {

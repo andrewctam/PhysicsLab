@@ -14,6 +14,7 @@ public class PointMass : MonoBehaviour
     public Graph grapher;
     public Color defaultColor, alphaDefaultColor;
     public Vector2 currentVelocity, velocityLastFrame, acceleration;
+    public string name;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +29,7 @@ public class PointMass : MonoBehaviour
         xAxisIndex = 0;
         yAxisIndex = 1;
         ID = int.Parse(gameObject.name);
+        name = "Object " + ID;
         defaultColor = gameObject.GetComponent<SpriteRenderer>().color;
         alphaDefaultColor = new Color(defaultColor.r, defaultColor.g, defaultColor.b, 0.6f);
     

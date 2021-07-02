@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
- 
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+
 public class CameraControls : MonoBehaviour
 {
     public float speed, xBoundMin, xBoundMax, yBoundMin, yBoundMax, dragSpeed, dragKey;
     public bool cameraBounded, dragging;
     public Vector3 currentPos, posLastFrame;
     public CreateObjects create;
+    public bool interacting, keyboardAllowed;
     
  
     void Start() {
@@ -19,37 +22,6 @@ public class CameraControls : MonoBehaviour
     
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-            dragging = true;
-        else if (Input.GetMouseButtonUp(0)) 
-            dragging = false;
-
-        if (create.noObjectBeingDragged || !cameraBounded) {
-            posLastFrame = currentPos;
-            currentPos = (Input.mousePosition);
-            if (dragging && currentPos != posLastFrame)   
-                transform.Translate(Camera.main.ScreenToWorldPoint(posLastFrame) - Camera.main.ScreenToWorldPoint(currentPos)); 
-        }
-
-
-
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-            transform.Translate(new Vector3(speed  *  Camera.main.orthographicSize, 0, 0));
-
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-            transform.Translate(new Vector3(-speed  *  Camera.main.orthographicSize, 0, 0));
-
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-            transform.Translate(new Vector3(0, -speed  *  Camera.main.orthographicSize, 0));
-
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-            transform.Translate(new Vector3(0, speed  *  Camera.main.orthographicSize, 0));
-
-
-
-        if (Input.GetKey(KeyCode.Z))
-            setCameraPosition(0f, 0f);
-        
         if (cameraBounded) {
             if (Camera.main.transform.position.x < xBoundMin)
                 Camera.main.transform.position = new Vector3(xBoundMin, Camera.main.transform.position.y, -1);
@@ -61,17 +33,59 @@ public class CameraControls : MonoBehaviour
             if (Camera.main.transform.position.y > yBoundMax)
                 Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, yBoundMax, -1);
         }
+        
+        interacting = EventSystem.current.IsPointerOverGameObject();
+        GameObject cS = EventSystem.current.currentSelectedGameObject;
+        keyboardAllowed = cS == null || cS.GetComponent<InputField>() == null;
+        
+        if (keyboardAllowed) {
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+                transform.Translate(new Vector3(speed  *  Camera.main.orthographicSize, 0, 0));
 
-        if (Input.GetKey(KeyCode.E))
-            Camera.main.orthographicSize -= 0.1f;
-        else if (Input.GetKey(KeyCode.Q))
-            Camera.main.orthographicSize += 0.1f;
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+                transform.Translate(new Vector3(-speed  *  Camera.main.orthographicSize, 0, 0));
 
-        Camera.main.orthographicSize += -Input.mouseScrollDelta.y;
-        if (Camera.main.orthographicSize < 1f)
-            Camera.main.orthographicSize = 1f;
-        else if (cameraBounded && Camera.main.orthographicSize > 30f)
-            Camera.main.orthographicSize = 30f;
+            if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+                transform.Translate(new Vector3(0, -speed  *  Camera.main.orthographicSize, 0));
+
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+                transform.Translate(new Vector3(0, speed  *  Camera.main.orthographicSize, 0));
+                
+            if (Input.GetKey(KeyCode.E))
+                Camera.main.orthographicSize -= 0.1f;
+            else if (Input.GetKey(KeyCode.Q))
+                Camera.main.orthographicSize += 0.1f;
+
+
+
+            if (Input.GetKey(KeyCode.Z))
+                setCameraPosition(0f, 0f);
+        }
+
+
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+            dragging = true;
+        else if (Input.GetMouseButtonUp(0)) 
+            dragging = false;
+
+        
+        if (create.grapher.xAxisDropdown.transform.childCount < 4 && create.grapher.yAxisDropdown.transform.childCount < 4) {
+            if (create.noObjectBeingDragged || !cameraBounded) {
+                posLastFrame = currentPos;
+                currentPos = (Input.mousePosition);
+                if (dragging && currentPos != posLastFrame)   
+                    transform.Translate(Camera.main.ScreenToWorldPoint(posLastFrame) - Camera.main.ScreenToWorldPoint(currentPos)); 
+            }
+
+            Camera.main.orthographicSize += -Input.mouseScrollDelta.y;
+            if (Camera.main.orthographicSize < 1f)
+                Camera.main.orthographicSize = 1f;
+            else if (cameraBounded && Camera.main.orthographicSize > 30f)
+                Camera.main.orthographicSize = 30f;
+        
+            
+            
+        }
     }
 
 
