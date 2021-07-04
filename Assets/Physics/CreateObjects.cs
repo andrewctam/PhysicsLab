@@ -47,24 +47,27 @@ public class CreateObjects : MonoBehaviour
 
         timer.text = formatClock(elapsedTime, 3);
 
-        if (noAnnouncementDisplayed && announcementQueue.Count > 0) {
-            announcementQueue.Dequeue().SetActive(true);
-            noAnnouncementDisplayed = false; 
-        }
-        
-
         if (cameraSettings.keyboardAllowed && Input.GetKeyDown(KeyCode.R)) {
+            newUrgentAnnouncement("Lab Reset and Graph Cleared", 60);
             elapsedTime = 0f;
             started = false;
             startLabButtonText.text = "Start"; 
+            PointMass current;
             for (int i = 0; i < count + 1; i++)
-                if (createdObjects[i] != null)
-                    createdObjects[i].GetComponent<PointMass>().started = false;
+                if (createdObjects[i] != null) {
+                    current = createdObjects[i].GetComponent<PointMass>();
+                    current.gameObject.transform.position = current.pos0;
+                    current.started = false;
+                    }
             Time.timeScale = 0;
             grapher.deletePoints();
             for (int i = 0; i < count + 1; i++)
                 if (createdObjects[i] != null)
                     createdObjects[i].transform.position = createdObjects[i].GetComponent<PointMass>().pos0;
+
+                     for (int i = 0; i < count + 1; i++)
+                if (createdObjects[i] != null)
+                    createdObjects[i].GetComponent<PointMass>().started = false;
         }
             
             
@@ -80,21 +83,32 @@ public class CreateObjects : MonoBehaviour
 
     public void newAnnouncement(string message, int framesToDestroy) {
         GameObject created = Instantiate(announcement, announcement.transform.position, Quaternion.identity, gameObject.transform);
-        created.GetComponent<Announcement>().setAnnouncement(message, framesToDestroy);
-        created.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 100f);
         announcementQueue.Enqueue(created);
+        created.GetComponent<Announcement>().setAnnouncement(message, framesToDestroy, false);
         
+    }
+    //urgent announcements are meant for short messages such as errors, actions, buttons clicks, etc.
+    public void newUrgentAnnouncement(string message, int framesToDestroy) { 
+        Announcement announcementReplaced = FindObjectOfType<Announcement>(); 
+        if (announcementReplaced != null)
+            if (announcementReplaced.urgent)
+                announcementReplaced.destroyNow(); //there can only be one urgent announcement. other urgent messages will be destroyed
+            else
+                announcementReplaced.gameObject.SetActive(false); //non urgetnurgent announcements will be redisplyaed once this urgent announcement is done
+            
+        GameObject created = Instantiate(announcement, announcement.transform.position, Quaternion.identity, gameObject.transform);
+        created.GetComponent<Announcement>().setAnnouncement(message, framesToDestroy, true);
     }
 
     public void togglePause() {
         if (started)
             if (Time.timeScale == 0) {
                 Time.timeScale = timeSpeed;
-                newAnnouncement("Lab Resumed", 60);
+                newUrgentAnnouncement("Lab Resumed", 30);
             }
             else {
                 Time.timeScale = 0f;
-                newAnnouncement("Lab Paused", 60);
+                newUrgentAnnouncement("Lab Paused", 30);
             }
 
     }
@@ -343,7 +357,7 @@ public class CreateObjects : MonoBehaviour
 
     public void startLab() {                
         if (started) {
-        newAnnouncement("Lab Stopped", 60);
+        newUrgentAnnouncement("Lab Stopped", 30);
             Time.timeScale = 0;
             started = false;
             startLabButtonText.text  = "Start"; 
@@ -351,7 +365,7 @@ public class CreateObjects : MonoBehaviour
                 if (createdObjects[i] != null)
                     createdObjects[i].GetComponent<PointMass>().started = false;
         } else {
-            newAnnouncement("Lab Started", 60);
+            newUrgentAnnouncement("Lab Started", 30);
             started = true;
             startLabButtonText.text = "Stop";
             for (int i = 0; i < count + 1; i++)

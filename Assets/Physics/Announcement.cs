@@ -6,21 +6,37 @@ using UnityEngine.UI;
 public class Announcement : MonoBehaviour
 {
     public int frame, framesToDestroy;
+    public bool urgent;
 
-    public void setAnnouncement(string message, int frames) {
-        gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = message; 
-        framesToDestroy = frames;
+    void Start() {
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 100f);
     }
-
+    
     void Update() {
         frame++;
         if (frame > framesToDestroy)
             destroyNow();
     }
 
+    public void setAnnouncement(string message, int frames, bool isUrgent) {
+        urgent = isUrgent;
+        gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = message; 
+        framesToDestroy = frames;
+
+        if (urgent || FindObjectOfType<CreateObjects>().announcementQueue.Count == 1) //if urgent or this announcement is at the front of the queue 
+            gameObject.SetActive(true);
+        else
+            gameObject.SetActive(false);
+    }
 
     public void destroyNow() {
-        FindObjectOfType<CreateObjects>().noAnnouncementDisplayed = true;
+        CreateObjects create = FindObjectOfType<CreateObjects>();
+        if (!urgent) { 
+            create.announcementQueue.Dequeue();        //remove this announcement from the queue
+        }
+        
+        if (create.announcementQueue.Count > 0) 
+            create.announcementQueue.Peek().SetActive(true);
         Destroy(gameObject);
     }
 
