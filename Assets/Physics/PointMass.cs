@@ -44,19 +44,9 @@ public class PointMass : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-
-        if (isGraphing) {
-            if (create.graphBar.activeSelf && create.current == ID) {
-                xAxisIndex = grapher.xAxisDropdown.GetComponent<Dropdown>().value;
-                yAxisIndex = grapher.yAxisDropdown.GetComponent<Dropdown>().value;
-            }
-            
-            xAxis = graphAxisOptions(xAxisIndex);
-            yAxis = graphAxisOptions(yAxisIndex);
-        }
-    
         if (create.current == ID)  {
             gameObject.GetComponent<SpriteRenderer>().color = alphaDefaultColor;
+
             if (isPressed && (Input.GetKey(KeyCode.LeftShift) || draggable)) {
                 create.noObjectBeingDragged = false;
                 rb.velocity = Vector3.zero;
@@ -70,13 +60,24 @@ public class PointMass : MonoBehaviour
                     create.posy.text = pos0.y + "";
                     create.newObjectSelected = false;
                 }
-
-            } else
+                
+            } else {
                 create.noObjectBeingDragged = true;
+            }
+
+            if (isGraphing) {
+                if (create.graphBar.activeSelf) {
+                    xAxisIndex = grapher.xAxisDropdown.GetComponent<Dropdown>().value;
+                    yAxisIndex = grapher.yAxisDropdown.GetComponent<Dropdown>().value;
+                }
+                xAxis = graphAxisOptions(xAxisIndex);
+                yAxis = graphAxisOptions(yAxisIndex);
+            }
+        }
+        else {
+            gameObject.GetComponent<SpriteRenderer>().color = defaultColor;
         }
 
-        else 
-            gameObject.GetComponent<SpriteRenderer>().color = defaultColor;
     }
 
     void OnMouseDown() {
@@ -84,7 +85,6 @@ public class PointMass : MonoBehaviour
         if (create.updateCurrent(ID)) { //if different object is selected
             draggable = false;
         }
-        //create.GetComponent<CreateObjects>().newObjectSelected = true;
         create.openEditorNewObject();
     }
 
@@ -119,8 +119,5 @@ public class PointMass : MonoBehaviour
             default: return 0;
         }
     }
-
-
-
+    
 }
-

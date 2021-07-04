@@ -71,8 +71,9 @@ public class CreateObjects : MonoBehaviour
         if (cameraSettings.keyboardAllowed && Input.GetKeyDown(KeyCode.Space))
             if (started) {
                 togglePause();
-            } else
+            } else {
                 startLab();
+            }
         
 
     }
@@ -87,10 +88,14 @@ public class CreateObjects : MonoBehaviour
 
     public void togglePause() {
         if (started)
-            if (Time.timeScale == 0)
+            if (Time.timeScale == 0) {
                 Time.timeScale = timeSpeed;
-            else
+                newAnnouncement("Lab Resumed", 60);
+            }
+            else {
                 Time.timeScale = 0f;
+                newAnnouncement("Lab Paused", 60);
+            }
 
     }
     public void openEditorNewObject() {
@@ -336,8 +341,9 @@ public class CreateObjects : MonoBehaviour
         return true;
     } 
 
-    public void startLab() {
+    public void startLab() {                
         if (started) {
+        newAnnouncement("Lab Stopped", 60);
             Time.timeScale = 0;
             started = false;
             startLabButtonText.text  = "Start"; 
@@ -345,6 +351,7 @@ public class CreateObjects : MonoBehaviour
                 if (createdObjects[i] != null)
                     createdObjects[i].GetComponent<PointMass>().started = false;
         } else {
+            newAnnouncement("Lab Started", 60);
             started = true;
             startLabButtonText.text = "Stop";
             for (int i = 0; i < count + 1; i++)
