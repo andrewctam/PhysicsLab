@@ -69,7 +69,7 @@ public class CameraControls : MonoBehaviour
             dragging = false;
 
         
-        if (create.grapher.xAxisDropdown.transform.childCount < 4 && create.grapher.yAxisDropdown.transform.childCount < 4) {
+        if (!interacting && create.grapher.xAxisDropdown.transform.childCount < 4 && create.grapher.yAxisDropdown.transform.childCount < 4) {
             if (create.noObjectBeingDragged || !cameraBounded) {
                 posLastFrame = currentPos;
                 currentPos = (Input.mousePosition);

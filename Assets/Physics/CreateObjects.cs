@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class CreateObjects : MonoBehaviour
 {
-    public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, labGameObject, graphGameObject, graphButton, labBar, graphBar, graphSettings;
+    public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, labGameObject, graphGameObject, graphButton, labBar, graphBar, graphSettings, objectSelector, objectSelectorContainer;
     public Text objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText;
     public InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, nameInput;
-    public List<GameObject> createdObjects;
+    public List<GameObject> createdObjects, abc;
     public Queue<GameObject> announcementQueue;
     public int count, current;
     public bool newObjectSelected, started, noObjectBeingDragged;
@@ -71,6 +71,7 @@ public class CreateObjects : MonoBehaviour
             } else {
                 startLab();
             }
+
         
 
     }
@@ -171,7 +172,9 @@ public class CreateObjects : MonoBehaviour
     }
 
     public void updateName() {
+
         createdObjects[current].name = nameInput.text;
+        createdObjects[current].GetComponent<PointMass>().selector.GetComponent<Selector>().updateSelectorName(nameInput.text);
     }
 
     public void updateInitialAcc() {
@@ -273,6 +276,8 @@ public class CreateObjects : MonoBehaviour
         createdObjects.Add(Instantiate(prefabToCreate, new Vector3(0, 0, 0), Quaternion.identity, labGameObject.transform));
         createdObjects[count].GetComponent<PointMass>().ID = count;
         createdObjects[count].name = "Object " + count;
+
+        objectSelectorContainer.GetComponent<RectTransform>().sizeDelta  = new Vector2(0, 32 * (count + 1));
     }
 
     /* UI methods*/
@@ -337,7 +342,7 @@ public class CreateObjects : MonoBehaviour
             grapher.yAxisDropdown.value = currentPointMassScript.yAxisIndex;
 
 
-            objectIDText.text = "Object ID: " + createdObjects[current].name;
+            objectIDText.text = "Object ID: " + currentPointMassScript.ID;
             nameInput.text = currentPointMassScript.name;
             // Update Input Fields with current info
             massInput.text = createdObjects[current].GetComponent<Rigidbody2D>().mass + "";
@@ -360,12 +365,13 @@ public class CreateObjects : MonoBehaviour
     }
 
     public void destroyCurrent() {
+        Destroy(createdObjects[current].GetComponent<PointMass>().selector);
         grapher.graphedObjects.Remove(createdObjects[current].gameObject);
         Destroy(createdObjects[current].gameObject);
         createdObjects[current] = null;
         editor.SetActive(false);
         buttons.SetActive(true); 
-        updateCurrent(-1);      
+        current = -1;      
     }
 
     public bool updateCurrent(int updated) { //returns if current has changed
@@ -403,4 +409,26 @@ public class CreateObjects : MonoBehaviour
 
     }
 
+
+/*
+    public void updateObjectSidebar(string searchQuery) {
+        List<GameObject> objectsToDisplay = new List<GameObject>();
+
+
+        if (searchQuery == "")
+            objectsToDisplay = createdObjects;
+        else
+            foreach(GameObject obj in createdObjects) {
+                if (obj.name.Contains(searchQuery)) {
+                    objectsToDisplay.Add(obj);
+                }
+            } 
+
+
+        content.GetComponent<RectTransform>().sizeDelta  = new Vector2(0, 32 * objectsToDisplay.Count);
+        for (int i = 0; i < objectsToDisplay.Count; i++) {
+            Instantiate(a, a.transform.position, Quaternion.identity, content.transform).GetComponent<RectTransform>().anchoredPosition = new Vector2(0, i * -32);
+
+        }
+    } */
 }

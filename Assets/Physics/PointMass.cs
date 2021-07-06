@@ -14,6 +14,7 @@ public class PointMass : MonoBehaviour
     public Graph grapher;
     public Color defaultColor, alphaDefaultColor;
     public Vector2 currentVelocity, velocityLastFrame, acceleration;
+    public GameObject selector;
 
     // Start is called before the first frame update
     void Start()
@@ -27,9 +28,16 @@ public class PointMass : MonoBehaviour
         acc0 = new Vector3(0, 0, 0);
         xAxisIndex = 0;
         yAxisIndex = 1;
+        
         defaultColor = gameObject.GetComponent<SpriteRenderer>().color;
         alphaDefaultColor = new Color(defaultColor.r, defaultColor.g, defaultColor.b, 0.6f);
-    
+
+
+        selector = Instantiate(create.objectSelector, new Vector3(0, 0, 0), Quaternion.identity, create.objectSelectorContainer.transform);
+
+        Selector selectorScript = selector.GetComponent<Selector>();
+        selectorScript.updateInfo(ID, gameObject.name, GetComponent<SpriteRenderer>());        
+
     }
     void FixedUpdate() {
         velocityLastFrame = currentVelocity;
@@ -61,10 +69,6 @@ public class PointMass : MonoBehaviour
             }
 
             if (isGraphing) {
-                if (create.graphBar.activeSelf) {
-                    xAxisIndex = grapher.xAxisDropdown.GetComponent<Dropdown>().value;
-                    yAxisIndex = grapher.yAxisDropdown.GetComponent<Dropdown>().value;
-                }
                 xAxis = graphAxisOptions(xAxisIndex);
                 yAxis = graphAxisOptions(yAxisIndex);
             }

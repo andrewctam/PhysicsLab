@@ -118,21 +118,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9e88eddd0e8b043b831ec56870027d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPressed: 0
-  started: 0
   rb: {fileID: 0}
   pos0: {x: 0, y: 0, z: 0}
   vel0: {x: 0, y: 0, z: 0}
   acc0: {x: 0, y: 0, z: 0}
-  prevPos0: {x: 0, y: 0, z: 0}
-  yAxis: 0
   xAxis: 0
+  yAxis: 0
+  xAxisIndex: 0
+  yAxisIndex: 0
+  ID: 0
   create: {fileID: 0}
+  isPressed: 0
+  started: 0
   canRotate: 0
   canTranslateX: 0
   canTranslateY: 0
   isGraphing: 0
   draggable: 0
+  grapher: {fileID: 0}
+  defaultColor: {r: 0, g: 0, b: 0, a: 0}
+  alphaDefaultColor: {r: 0, g: 0, b: 0, a: 0}
+  currentVelocity: {x: 0, y: 0}
+  velocityLastFrame: {x: 0, y: 0}
+  acceleration: {x: 0, y: 0}
+  selector: {fileID: 0}
 --- !u!60 &6924635088681910354
 PolygonCollider2D:
   m_ObjectHideFlags: 0
