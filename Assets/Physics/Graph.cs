@@ -98,4 +98,14 @@ public class Graph : MonoBehaviour
        
 
     }
+
+
+
+    public void updateXAxis() {
+        create.createdObjects[create.current].GetComponent<PointMass>().xAxisIndex = xAxisDropdown.GetComponent<Dropdown>().value;
+    }
+
+    public void updateYAxis() {
+        create.createdObjects[create.current].GetComponent<PointMass>().yAxisIndex = yAxisDropdown.GetComponent<Dropdown>().value;
+    }
 }

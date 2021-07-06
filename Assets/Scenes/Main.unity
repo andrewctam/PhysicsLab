@@ -1007,7 +1007,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &200012134
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1755,11 +1755,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 487960357}
         m_TargetAssemblyTypeName: CreateObjects, Assembly-CSharp
-        m_MethodName: CreateBowlingBall
-        m_Mode: 1
+        m_MethodName: createNewObject
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 6562412592464971139, guid: f623e99210cf19947a98069e1634a034, type: 3}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1917,7 +1917,19 @@ MonoBehaviour:
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 487960356}
+        m_TargetAssemblyTypeName: Graph, Assembly-CSharp
+        m_MethodName: updateYAxis
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!114 &255000088
 MonoBehaviour:
@@ -3596,10 +3608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24b1ad7565c345545b478ddc946dc489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  announcement: {fileID: 856476661348764446, guid: 484f2d3100060e646acfb8eee27ce40c, type: 3}
-  pointMass: {fileID: 3740292928329324862, guid: ceed9266957f1da438a19da93d10484e, type: 3}
-  ramp: {fileID: 5033864182671065735, guid: eafebebbac1f9e94a922bcbca4fb7f71, type: 3}
-  bowlingBall: {fileID: 6562412592464971139, guid: f623e99210cf19947a98069e1634a034, type: 3}
+  announcementPrefab: {fileID: 856476661348764446, guid: 484f2d3100060e646acfb8eee27ce40c, type: 3}
   bar: {fileID: 1764869379}
   editor: {fileID: 2121242279}
   buttons: {fileID: 200012133}
@@ -3634,10 +3643,8 @@ MonoBehaviour:
   current: 0
   newObjectSelected: 0
   started: 0
-  noAnnouncementDisplayed: 0
   noObjectBeingDragged: 0
   elapsedTime: 0
-  lastPlot: 0
   timeSpeed: 0
   grapher: {fileID: 487960356}
   cameraSettings: {fileID: 1424663774}
@@ -4878,7 +4885,19 @@ MonoBehaviour:
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 487960356}
+        m_TargetAssemblyTypeName: Graph, Assembly-CSharp
+        m_MethodName: updateXAxis
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!114 &690352889
 MonoBehaviour:
@@ -10378,11 +10397,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 487960357}
         m_TargetAssemblyTypeName: CreateObjects, Assembly-CSharp
-        m_MethodName: CreateRamp
-        m_Mode: 1
+        m_MethodName: createNewObject
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 5033864182671065735, guid: eafebebbac1f9e94a922bcbca4fb7f71, type: 3}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -10512,11 +10531,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 487960357}
         m_TargetAssemblyTypeName: CreateObjects, Assembly-CSharp
-        m_MethodName: CreateBowlingBall
-        m_Mode: 1
+        m_MethodName: CreateObject
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 6562412592464971139, guid: f623e99210cf19947a98069e1634a034, type: 3}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -11421,11 +11440,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 487960357}
         m_TargetAssemblyTypeName: CreateObjects, Assembly-CSharp
-        m_MethodName: CreatePointMass
-        m_Mode: 1
+        m_MethodName: createNewObject
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 3740292928329324862, guid: ceed9266957f1da438a19da93d10484e, type: 3}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -17980,7 +17999,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2121242280
 RectTransform:
   m_ObjectHideFlags: 0

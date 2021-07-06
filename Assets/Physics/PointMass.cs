@@ -14,7 +14,6 @@ public class PointMass : MonoBehaviour
     public Graph grapher;
     public Color defaultColor, alphaDefaultColor;
     public Vector2 currentVelocity, velocityLastFrame, acceleration;
-    public string name;
 
     // Start is called before the first frame update
     void Start()
@@ -28,8 +27,6 @@ public class PointMass : MonoBehaviour
         acc0 = new Vector3(0, 0, 0);
         xAxisIndex = 0;
         yAxisIndex = 1;
-        ID = int.Parse(gameObject.name);
-        name = "Object " + ID;
         defaultColor = gameObject.GetComponent<SpriteRenderer>().color;
         alphaDefaultColor = new Color(defaultColor.r, defaultColor.g, defaultColor.b, 0.6f);
     
@@ -45,8 +42,6 @@ public class PointMass : MonoBehaviour
     void Update()
     {   
         if (create.current == ID)  {
-            gameObject.GetComponent<SpriteRenderer>().color = alphaDefaultColor;
-
             if (isPressed && (Input.GetKey(KeyCode.LeftShift) || draggable)) {
                 create.noObjectBeingDragged = false;
                 rb.velocity = Vector3.zero;
@@ -74,13 +69,10 @@ public class PointMass : MonoBehaviour
                 yAxis = graphAxisOptions(yAxisIndex);
             }
         }
-        else {
-            gameObject.GetComponent<SpriteRenderer>().color = defaultColor;
-        }
-
     }
 
     void OnMouseDown() {
+        
         isPressed = true; 
         if (create.updateCurrent(ID)) { //if different object is selected
             draggable = false;
