@@ -7,8 +7,6 @@ public class Selector : MonoBehaviour
     public int id;
     public Text idText, name;
     public Image img;
-    public CreateObjects create;
-
 
     public void updateInfo(int changeID, string changeName, SpriteRenderer sr)
     {
@@ -17,13 +15,15 @@ public class Selector : MonoBehaviour
         updateSelectorName(changeName);
         img.sprite = sr.sprite;
         img.color = sr.color;
-        GetComponent<RectTransform>().anchoredPosition = new Vector2(0, id * -32);
+        //GetComponent<RectTransform>().anchoredPosition = new Vector2(0, id * -32);
         GetComponent<Button>().onClick.AddListener(setToCurrent);
+        gameObject.SetActive(false);
     }
 
     public void setToCurrent() {
-        create = FindObjectOfType<CreateObjects>();
+        CreateObjects create = FindObjectOfType<CreateObjects>();
         create.updateCurrent(id);
+        create.createdObjects[id].GetComponent<PointMass>().draggable = true;
         create.openEditorNewObject();
 
     }

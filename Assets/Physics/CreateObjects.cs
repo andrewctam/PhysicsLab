@@ -7,11 +7,11 @@ using UnityEngine.UI;
 public class CreateObjects : MonoBehaviour
 {
     public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, labGameObject, graphGameObject, graphButton, labBar, graphBar, graphSettings, objectSelector, objectSelectorContainer;
-    public Text objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText;
-    public InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, nameInput;
-    public List<GameObject> createdObjects, abc;
+    public Text objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText, selectorText;
+    public InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, nameInput, selectorSearchInput;
+    public List<GameObject> createdObjects, selectorsList;
     public Queue<GameObject> announcementQueue;
-    public int count, current;
+    public int indexOfLast, current;
     public bool newObjectSelected, started, noObjectBeingDragged;
     public float elapsedTime, timeSpeed;
     public Graph grapher;
@@ -25,9 +25,11 @@ public class CreateObjects : MonoBehaviour
         elapsedTime = -0.02f;
         timeSpeed = 1f;
         started = false;
-        count = -1;
+        indexOfLast = -1;
         current = -1;
         createdObjects = new List<GameObject>();
+        selectorsList = new List<GameObject>();
+        
         announcementQueue = new Queue<GameObject>();
 
         graphCameraPos = new Vector3(0, 0, 0);
@@ -47,7 +49,7 @@ public class CreateObjects : MonoBehaviour
             started = false;
             startLabButtonText.text = "Start"; 
             PointMass currentObj;
-            for (int i = 0; i < count + 1; i++)
+            for (int i = 0; i < indexOfLast + 1; i++)
                 if (createdObjects[i] != null) {
                     currentObj = createdObjects[i].GetComponent<PointMass>();
                     currentObj.gameObject.transform.position = currentObj.pos0;
@@ -55,11 +57,11 @@ public class CreateObjects : MonoBehaviour
                     }
             Time.timeScale = 0;
             grapher.deletePoints();
-            for (int i = 0; i < count + 1; i++)
+            for (int i = 0; i < indexOfLast + 1; i++)
                 if (createdObjects[i] != null)
                     createdObjects[i].transform.position = createdObjects[i].GetComponent<PointMass>().pos0;
 
-                     for (int i = 0; i < count + 1; i++)
+                     for (int i = 0; i < indexOfLast + 1; i++)
                 if (createdObjects[i] != null)
                     createdObjects[i].GetComponent<PointMass>().started = false;
         }
@@ -174,7 +176,7 @@ public class CreateObjects : MonoBehaviour
     public void updateName() {
 
         createdObjects[current].name = nameInput.text;
-        createdObjects[current].GetComponent<PointMass>().selector.GetComponent<Selector>().updateSelectorName(nameInput.text);
+        selectorsList[current].GetComponent<Selector>().updateSelectorName(nameInput.text);
     }
 
     public void updateInitialAcc() {
@@ -272,12 +274,19 @@ public class CreateObjects : MonoBehaviour
 
 
     public void createNewObject(GameObject prefabToCreate) {
-        count++;
+        indexOfLast++;
         createdObjects.Add(Instantiate(prefabToCreate, new Vector3(0, 0, 0), Quaternion.identity, labGameObject.transform));
-        createdObjects[count].GetComponent<PointMass>().ID = count;
-        createdObjects[count].name = "Object " + count;
+        createdObjects[indexOfLast].GetComponent<PointMass>().ID = indexOfLast;
+        createdObjects[indexOfLast].name = "Object " + indexOfLast;
 
-        objectSelectorContainer.GetComponent<RectTransform>().sizeDelta  = new Vector2(0, 32 * (count + 1));
+        objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * (indexOfLast + 1));
+
+
+        GameObject createdSelector = Instantiate(objectSelector, new Vector3(0, 0, 0), Quaternion.identity, objectSelectorContainer.transform);
+        selectorsList.Add(createdSelector);
+        createdSelector.GetComponent<Selector>().updateInfo(indexOfLast, createdObjects[indexOfLast].name, createdObjects[indexOfLast].GetComponent<SpriteRenderer>()); 
+
+        updateSelectors(true);
     }
 
     /* UI methods*/
@@ -306,14 +315,14 @@ public class CreateObjects : MonoBehaviour
             Time.timeScale = 0;
             started = false;
             startLabButtonText.text  = "Start"; 
-            for (int i = 0; i < count + 1; i++)
+            for (int i = 0; i < indexOfLast + 1; i++)
                 if (createdObjects[i] != null)
                     createdObjects[i].GetComponent<PointMass>().started = false;
         } else {
             newUrgentAnnouncement("Lab Started", 30);
             started = true;
             startLabButtonText.text = "Stop";
-            for (int i = 0; i < count + 1; i++)
+            for (int i = 0; i < indexOfLast + 1; i++)
                 if (createdObjects[i] != null)
                     createdObjects[i].GetComponent<PointMass>().initiateMovement();
             Time.timeScale = timeSpeed;
@@ -322,53 +331,55 @@ public class CreateObjects : MonoBehaviour
     }
 
     public void openEditorNewObject() {
-            newObjectSelected = true;
-            editor.SetActive(true);
-            graphBar.SetActive(false);
-            buttons.SetActive(false);
-            labBar.SetActive(true);
+        newObjectSelected = true;
+        editor.SetActive(true);
+        graphBar.SetActive(false);
+        buttons.SetActive(false);
+        labBar.SetActive(true);
 
+        
+        PointMass currentPointMassScript = createdObjects[current].GetComponent<PointMass>();
+        if (currentPointMassScript.isGraphing) 
+            graphButton.GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);
+        else
+            graphButton.GetComponent<Image>().color = Color.white;
             
-            PointMass currentPointMassScript = createdObjects[current].GetComponent<PointMass>();
-            if (currentPointMassScript.isGraphing) 
-                graphButton.GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);
-            else
-                graphButton.GetComponent<Image>().color = Color.white;
-                
-            createdObjects[current].GetComponent<SpriteRenderer>().color = currentPointMassScript.alphaDefaultColor;
+        createdObjects[current].GetComponent<SpriteRenderer>().color = currentPointMassScript.defaultColor;
 
-            graphSettings.SetActive(currentPointMassScript.isGraphing);
-            grapher.xAxisDropdown.value = currentPointMassScript.xAxisIndex;
-            grapher.yAxisDropdown.value = currentPointMassScript.yAxisIndex;
+        graphSettings.SetActive(currentPointMassScript.isGraphing);
+        grapher.xAxisDropdown.value = currentPointMassScript.xAxisIndex;
+        grapher.yAxisDropdown.value = currentPointMassScript.yAxisIndex;
 
 
-            objectIDText.text = "Object ID: " + currentPointMassScript.ID;
-            nameInput.text = currentPointMassScript.name;
-            // Update Input Fields with current info
-            massInput.text = createdObjects[current].GetComponent<Rigidbody2D>().mass + "";
-            heightInput.text = createdObjects[current].transform.localScale.y + "";
-            widthInput.text = createdObjects[current].transform.localScale.x + "";
+        objectIDText.text = "Object ID: " + currentPointMassScript.ID;
+        nameInput.text = currentPointMassScript.name;
+        // Update Input Fields with current info
+        massInput.text = createdObjects[current].GetComponent<Rigidbody2D>().mass + "";
+        heightInput.text = createdObjects[current].transform.localScale.y + "";
+        widthInput.text = createdObjects[current].transform.localScale.x + "";
 
-            //Update vectors
-            posx.text = currentPointMassScript.pos0.x + "";
-            posy.text = currentPointMassScript.pos0.y + "";
-            velx.text = currentPointMassScript.vel0.x + "";
-            vely.text = currentPointMassScript.vel0.y + "";
-            accX.text = currentPointMassScript.acc0.x + "";
-            accY.text = currentPointMassScript.acc0.y + "";
-            
-            //Update checkboxes
-            toggleRot.GetComponent<Toggle>().isOn = !currentPointMassScript.canRotate;
-            toggleX.GetComponent<Toggle>().isOn = !currentPointMassScript.canTranslateX;
-            toggleY.GetComponent<Toggle>().isOn = !currentPointMassScript.canTranslateY;
-            newObjectSelected = false;
+        //Update vectors
+        posx.text = currentPointMassScript.pos0.x + "";
+        posy.text = currentPointMassScript.pos0.y + "";
+        velx.text = currentPointMassScript.vel0.x + "";
+        vely.text = currentPointMassScript.vel0.y + "";
+        accX.text = currentPointMassScript.acc0.x + "";
+        accY.text = currentPointMassScript.acc0.y + "";
+        
+        //Update checkboxes
+        toggleRot.GetComponent<Toggle>().isOn = !currentPointMassScript.canRotate;
+        toggleX.GetComponent<Toggle>().isOn = !currentPointMassScript.canTranslateX;
+        toggleY.GetComponent<Toggle>().isOn = !currentPointMassScript.canTranslateY;
+        newObjectSelected = false;
     }
 
     public void destroyCurrent() {
-        Destroy(createdObjects[current].GetComponent<PointMass>().selector);
         grapher.graphedObjects.Remove(createdObjects[current].gameObject);
         Destroy(createdObjects[current].gameObject);
+        Destroy(selectorsList[current].gameObject);
+        selectorsList[current] = null;
         createdObjects[current] = null;
+        updateSelectors(true);
         editor.SetActive(false);
         buttons.SetActive(true); 
         current = -1;      
@@ -379,7 +390,7 @@ public class CreateObjects : MonoBehaviour
             return false;
         else {
             if (current != -1)
-                createdObjects[current].GetComponent<SpriteRenderer>().color = createdObjects[current].GetComponent<PointMass>().defaultColor;
+                createdObjects[current].GetComponent<SpriteRenderer>().color = createdObjects[current].GetComponent<PointMass>().alphaDefaultColor;
                 
             current = updated;
         }
@@ -401,34 +412,46 @@ public class CreateObjects : MonoBehaviour
             if (Time.timeScale == 0) {
                 Time.timeScale = timeSpeed;
                 newUrgentAnnouncement("Lab Resumed", 30);
-            }
-            else {
+            } else {
                 Time.timeScale = 0f;
                 newUrgentAnnouncement("Lab Paused", 30);
             }
-
     }
 
+    public void updateSelectors(bool search) {
+        string searchQuery = selectorSearchInput.text.ToUpper();
 
-/*
-    public void updateObjectSidebar(string searchQuery) {
-        List<GameObject> objectsToDisplay = new List<GameObject>();
-
-
-        if (searchQuery == "")
-            objectsToDisplay = createdObjects;
-        else
-            foreach(GameObject obj in createdObjects) {
-                if (obj.name.Contains(searchQuery)) {
-                    objectsToDisplay.Add(obj);
+        if (search || searchQuery != "") {
+            int currentIndex = 0;
+            for (int i = 0; i < selectorsList.Count; i++) {
+                if (createdObjects[i] != null) {
+                    if (createdObjects[i].name.ToUpper().Contains(searchQuery) || searchQuery == i + "") {
+                        selectorsList[i].SetActive(true);
+                        selectorsList[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, currentIndex * -32);
+                        currentIndex++;
+                    } else {
+                        selectorsList[i].SetActive(false);
+                    }
                 }
-            } 
+            }
 
+            objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * (currentIndex + 1));
+            if (currentIndex == 0)
+                selectorText.text = "No Results Found";
+            else
+                selectorText.text = "";
 
-        content.GetComponent<RectTransform>().sizeDelta  = new Vector2(0, 32 * objectsToDisplay.Count);
-        for (int i = 0; i < objectsToDisplay.Count; i++) {
-            Instantiate(a, a.transform.position, Quaternion.identity, content.transform).GetComponent<RectTransform>().anchoredPosition = new Vector2(0, i * -32);
-
+        } else {
+            selectorText.text = "";
+            for (int i = 0; i < selectorsList.Count; i++) {
+                if (createdObjects[i] != null) {
+                    selectorsList[i].SetActive(true);
+                    selectorsList[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, i * -32);
+                }
+            }
+            objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * (selectorsList.Count));
         }
-    } */
+        
+    }
+
 }

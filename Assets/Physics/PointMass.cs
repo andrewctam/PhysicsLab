@@ -29,15 +29,8 @@ public class PointMass : MonoBehaviour
         xAxisIndex = 0;
         yAxisIndex = 1;
         
-        defaultColor = gameObject.GetComponent<SpriteRenderer>().color;
-        alphaDefaultColor = new Color(defaultColor.r, defaultColor.g, defaultColor.b, 0.6f);
-
-
-        selector = Instantiate(create.objectSelector, new Vector3(0, 0, 0), Quaternion.identity, create.objectSelectorContainer.transform);
-
-        Selector selectorScript = selector.GetComponent<Selector>();
-        selectorScript.updateInfo(ID, gameObject.name, GetComponent<SpriteRenderer>());        
-
+        alphaDefaultColor = gameObject.GetComponent<SpriteRenderer>().color;
+        defaultColor = new Color(alphaDefaultColor.r, alphaDefaultColor.g, alphaDefaultColor.b, 1f);     
     }
     void FixedUpdate() {
         velocityLastFrame = currentVelocity;
