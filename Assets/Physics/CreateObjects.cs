@@ -294,7 +294,7 @@ public class CreateObjects : MonoBehaviour
         editor.SetActive(false);
         buttons.SetActive(true);
         createdObjects[current].GetComponent<PointMass>().draggable = false;
-        updateCurrent(-1);
+        current = -1;
     }
 
     public void closeBar() {
@@ -345,7 +345,7 @@ public class CreateObjects : MonoBehaviour
             graphButton.GetComponent<Image>().color = Color.white;
             
         createdObjects[current].GetComponent<SpriteRenderer>().color = currentPointMassScript.defaultColor;
-
+        selectorsList[current].GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);
         graphSettings.SetActive(currentPointMassScript.isGraphing);
         grapher.xAxisDropdown.value = currentPointMassScript.xAxisIndex;
         grapher.yAxisDropdown.value = currentPointMassScript.yAxisIndex;
@@ -389,9 +389,11 @@ public class CreateObjects : MonoBehaviour
         if (current == updated)
             return false;
         else {
-            if (current != -1)
+            if (current != -1) {
                 createdObjects[current].GetComponent<SpriteRenderer>().color = createdObjects[current].GetComponent<PointMass>().alphaDefaultColor;
-                
+                selectorsList[current].GetComponent<Image>().color = Color.white;
+            }
+
             current = updated;
         }
 
@@ -435,7 +437,7 @@ public class CreateObjects : MonoBehaviour
                 }
             }
 
-            objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * (currentIndex + 1));
+            objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * (currentIndex));
             if (currentIndex == 0)
                 selectorText.text = "No Results Found";
             else

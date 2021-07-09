@@ -138,9 +138,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   idText: {fileID: 7652530818482218916}
-  name: {fileID: 6885983478063052205}
+  objectName: {fileID: 6885983478063052205}
   img: {fileID: 5708969578951936584}
-  create: {fileID: 0}
 --- !u!1 &839206506199305300
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,7 +253,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 14.096, y: -5.04}
+  m_AnchoredPosition: {x: 14.095947, y: -5.040001}
   m_SizeDelta: {x: 18, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2519320138366662808

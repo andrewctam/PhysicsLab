@@ -5,7 +5,7 @@ using UnityEngine;
 public class Selector : MonoBehaviour
 {
     public int id;
-    public Text idText, name;
+    public Text idText, objectName;
     public Image img;
 
     public void updateInfo(int changeID, string changeName, SpriteRenderer sr)
@@ -28,8 +28,8 @@ public class Selector : MonoBehaviour
 
     }
 
-    public void updateSelectorName(string changeName) { //only name needs to be updated. the others don't
-        name.text = changeName;
+    public void updateSelectorName(string changeName) { //only objectName needs to be updated. the others don't
+        objectName.text = changeName;
     }
     
 }
