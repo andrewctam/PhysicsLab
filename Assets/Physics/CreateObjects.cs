@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 public class CreateObjects : MonoBehaviour
 {
     public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, labGameObject, graphGameObject, graphButton, labBar, graphBar, graphSettings, objectSelector, objectSelectorContainer;
-    public Text objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText, selectorText;
-    public InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, nameInput, selectorSearchInput;
+    public TextMeshProUGUI objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText, selectorText;
+    public TMP_InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, nameInput, selectorSearchInput;
     public List<GameObject> createdObjects, selectorsList;
     public Queue<GameObject> announcementQueue;
     public int indexOfLast, current;
@@ -294,7 +295,7 @@ public class CreateObjects : MonoBehaviour
         editor.SetActive(false);
         buttons.SetActive(true);
         createdObjects[current].GetComponent<PointMass>().draggable = false;
-        current = -1;
+        updateCurrent(-1);
     }
 
     public void closeBar() {

@@ -69,7 +69,7 @@ public class CameraControls : MonoBehaviour
             dragging = false;
 
         
-        if (!interacting && create.grapher.xAxisDropdown.transform.childCount < 4 && create.grapher.yAxisDropdown.transform.childCount < 4) {
+        if (!interacting) {
             if (create.noObjectBeingDragged || !cameraBounded) {
                 posLastFrame = currentPos;
                 currentPos = (Input.mousePosition);
@@ -77,14 +77,12 @@ public class CameraControls : MonoBehaviour
                     transform.Translate(Camera.main.ScreenToWorldPoint(posLastFrame) - Camera.main.ScreenToWorldPoint(currentPos)); 
             }
 
+
             Camera.main.orthographicSize += -Input.mouseScrollDelta.y;
             if (Camera.main.orthographicSize < 1f)
                 Camera.main.orthographicSize = 1f;
             else if (cameraBounded && Camera.main.orthographicSize > 30f)
-                Camera.main.orthographicSize = 30f;
-        
-            
-            
+                Camera.main.orthographicSize = 30f;        
         }
     }
 

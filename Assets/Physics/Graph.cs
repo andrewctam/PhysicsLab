@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+
+
 
 public class Graph : MonoBehaviour
 {
     public float lastPlot, plotFrequency, xScale, yScale;
     public GameObject graphGameObject, coordinatePoint, points;
     public CreateObjects create;
-    public InputField xScaleInput, yScaleInput, plotFreqInput;
+    public TMP_InputField xScaleInput, yScaleInput, plotFreqInput;
     public List<GameObject> graphedObjects;
-    public Dropdown xAxisDropdown, yAxisDropdown;
+    public TMP_Dropdown xAxisDropdown, yAxisDropdown;
 
     // Start is called before the first frame update
     void Start()
@@ -102,10 +105,10 @@ public class Graph : MonoBehaviour
 
 
     public void updateXAxis() {
-        create.createdObjects[create.current].GetComponent<PointMass>().xAxisIndex = xAxisDropdown.GetComponent<Dropdown>().value;
+        create.createdObjects[create.current].GetComponent<PointMass>().xAxisIndex = xAxisDropdown.GetComponent<TMP_Dropdown>().value;
     }
 
     public void updateYAxis() {
-        create.createdObjects[create.current].GetComponent<PointMass>().yAxisIndex = yAxisDropdown.GetComponent<Dropdown>().value;
+        create.createdObjects[create.current].GetComponent<PointMass>().yAxisIndex = yAxisDropdown.GetComponent<TMP_Dropdown>().value;
     }
 }
