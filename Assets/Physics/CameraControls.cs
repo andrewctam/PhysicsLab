@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class CameraControls : MonoBehaviour
 {
@@ -35,8 +36,8 @@ public class CameraControls : MonoBehaviour
         }
         
         interacting = EventSystem.current.IsPointerOverGameObject();
-        GameObject cS = EventSystem.current.currentSelectedGameObject;
-        keyboardAllowed = cS == null || cS.GetComponent<InputField>() == null;
+        GameObject UISelected = EventSystem.current.currentSelectedGameObject;
+        keyboardAllowed = UISelected == null || UISelected.GetComponent<TMP_InputField>() == null;
         
         if (keyboardAllowed) {
             if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
@@ -56,11 +57,11 @@ public class CameraControls : MonoBehaviour
             else if (Input.GetKey(KeyCode.Q))
                 Camera.main.orthographicSize += 0.1f;
 
-
-
             if (Input.GetKey(KeyCode.Z))
                 setCameraPosition(0f, 0f);
         }
+
+
 
 
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
@@ -76,8 +77,6 @@ public class CameraControls : MonoBehaviour
                 if (dragging && currentPos != posLastFrame)   
                     transform.Translate(Camera.main.ScreenToWorldPoint(posLastFrame) - Camera.main.ScreenToWorldPoint(currentPos)); 
             }
-
-
             Camera.main.orthographicSize += -Input.mouseScrollDelta.y;
             if (Camera.main.orthographicSize < 1f)
                 Camera.main.orthographicSize = 1f;
@@ -85,8 +84,6 @@ public class CameraControls : MonoBehaviour
                 Camera.main.orthographicSize = 30f;        
         }
     }
-
-
     
     public Vector3 setCameraPosition (float x, float y) {
         Vector3 oldPos = Camera.main.transform.position;
