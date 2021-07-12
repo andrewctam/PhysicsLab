@@ -423,9 +423,9 @@ public class CreateObjects : MonoBehaviour
 
     public void updateSelectors(bool search) {
         string searchQuery = selectorSearchInput.text.ToUpper();
+        int currentIndex = 0;
 
         if (search || searchQuery != "") {
-            int currentIndex = 0;
             for (int i = 0; i < selectorsList.Count; i++) {
                 if (createdObjects[i] != null) {
                     if (createdObjects[i].name.ToUpper().Contains(searchQuery) || searchQuery == i + "") {
@@ -437,24 +437,24 @@ public class CreateObjects : MonoBehaviour
                     }
                 }
             }
-
-            objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * (currentIndex));
             if (currentIndex == 0)
                 selectorText.text = "No Results Found";
             else
                 selectorText.text = "";
 
+
         } else {
-            selectorText.text = "";
             for (int i = 0; i < selectorsList.Count; i++) {
                 if (createdObjects[i] != null) {
                     selectorsList[i].SetActive(true);
-                    selectorsList[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, i * -32);
+                    selectorsList[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, currentIndex * -32);
+                    currentIndex++;
                 }
             }
-            objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * (selectorsList.Count));
+            selectorText.text = "";
         }
-        
+
+        objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * currentIndex);
     }
 
 }

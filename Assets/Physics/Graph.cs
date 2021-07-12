@@ -20,7 +20,6 @@ public class Graph : MonoBehaviour
     {
         plotFrequency = 0.5f;
         lastPlot = 0f;
-        //create = FindObjectOfType<CreateObjects>();
         xScale = 1f;
         yScale = 1f;
         graphedObjects = new List<GameObject>();
@@ -95,14 +94,9 @@ public class Graph : MonoBehaviour
             newFreq = 0.02f;
             plotFreqInput.text = "0.02";
             create.newAnnouncement("The minimum plot frequency is 0.02", 180);
-        
         }
         plotFrequency = newFreq;
-       
-
     }
-
-
 
     public void updateXAxis() {
         create.createdObjects[create.current].GetComponent<PointMass>().xAxisIndex = xAxisDropdown.GetComponent<TMP_Dropdown>().value;
