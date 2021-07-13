@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Announcement : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class Announcement : MonoBehaviour
 
     public void setAnnouncement(string message, int frames, bool isUrgent) {
         urgent = isUrgent;
-        gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = message; 
+        gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = message; 
         framesToDestroy = frames;
 
         if (urgent || FindObjectOfType<CreateObjects>().announcementQueue.Count == 1) //if urgent or this announcement is at the front of the queue 

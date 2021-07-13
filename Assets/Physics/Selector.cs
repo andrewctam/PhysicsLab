@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
+
 public class Selector : MonoBehaviour
 {
     public int id;
-    public Text idText, objectName;
+    public TextMeshProUGUI idText, objectName;
     public Image img;
 
     public void updateInfo(int changeID, string changeName, SpriteRenderer sr)
