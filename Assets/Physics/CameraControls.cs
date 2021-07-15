@@ -70,19 +70,21 @@ public class CameraControls : MonoBehaviour
             dragging = false;
 
         
-        if (!interacting) {
-            if (create.noObjectBeingDragged || !cameraBounded) {
-                posLastFrame = currentPos;
-                currentPos = (Input.mousePosition);
-                if (dragging && currentPos != posLastFrame)   
-                    transform.Translate(Camera.main.ScreenToWorldPoint(posLastFrame) - Camera.main.ScreenToWorldPoint(currentPos)); 
-            }
+        if (create.noObjectBeingDragged) {
+            posLastFrame = currentPos;
+            currentPos = (Input.mousePosition);
+            if (dragging && currentPos != posLastFrame)   
+                transform.Translate(Camera.main.ScreenToWorldPoint(posLastFrame) - Camera.main.ScreenToWorldPoint(currentPos)); 
+        }
+        
+        if (cameraBounded) {
             Camera.main.orthographicSize += -Input.mouseScrollDelta.y;
             if (Camera.main.orthographicSize < 1f)
                 Camera.main.orthographicSize = 1f;
             else if (cameraBounded && Camera.main.orthographicSize > 30f)
-                Camera.main.orthographicSize = 30f;        
-        }
+                Camera.main.orthographicSize = 30f;    
+            }    
+        
     }
     
     public Vector3 setCameraPosition (float x, float y) {
