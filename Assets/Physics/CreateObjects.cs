@@ -224,8 +224,7 @@ public class CreateObjects : MonoBehaviour
             graphGameObject.SetActive(false);
             graphBar.SetActive(false);
             labBar.SetActive(true);
-            grapher.axisLabelsX.SetActive(false);
-            grapher.axisLabelsY.SetActive(false);
+            grapher.axisLabelsX.transform.parent.gameObject.SetActive(false);
 
             cameraSettings.cameraBounded = true;
             graphCameraPos = cameraSettings.setCameraPosition(labCameraPos.x, labCameraPos.y);
@@ -244,8 +243,7 @@ public class CreateObjects : MonoBehaviour
     
             graphBar.SetActive(true);
             labBar.SetActive(false);
-            grapher.axisLabelsX.SetActive(true);
-            grapher.axisLabelsY.SetActive(true);
+            grapher.axisLabelsX.transform.parent.gameObject.SetActive(true);
             cameraSettings.cameraBounded = false;
             graphButtonText.text = "Lab Display";
             labCameraPos = cameraSettings.setCameraPosition(graphCameraPos.x, graphCameraPos.y);

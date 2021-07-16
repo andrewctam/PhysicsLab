@@ -9,7 +9,7 @@ using TMPro;
 public class Graph : MonoBehaviour
 {
     public float lastPlot, plotFrequency, xScale, yScale, canvasWidth, canvasHeight;
-    public GameObject graphGameObject, coordinatePoint, points, axisLabelsX, axisLabelsY, axisLabel;
+    public GameObject graphGameObject, coordinatePoint, points, axisLabelsX, axisLabelsY, axisLabel, axisGridsX, axisGridsY, XAxisPrefab, YAxisPrefab;
     public CreateObjects create;
     public TMP_InputField xScaleInput, yScaleInput, plotFreqInput;
     public List<GameObject> graphedObjects;
@@ -157,11 +157,15 @@ public class Graph : MonoBehaviour
             (Camera.main.WorldToScreenPoint(new Vector3(step, 0, 0)).x - Camera.main.WorldToScreenPoint(Vector3.zero).x) );
         
         if (axisLabelsX.transform.childCount < minimumLabels) {
-            for (int i = 0; i < minimumLabels - axisLabelsX.transform.childCount; i++)
+            for (int i = 0; i < minimumLabels - axisLabelsX.transform.childCount; i++) {
                 Instantiate(axisLabel, new Vector3(0, 0, 0), Quaternion.identity, axisLabelsX.transform);
+                Instantiate(XAxisPrefab, new Vector3(0, 0, 0), Quaternion.identity, axisGridsX.transform);
+            }
         } else if (axisLabelsX.transform.childCount > minimumLabels) {
-            for (int i = minimumLabels; i < axisLabelsX.transform.childCount; i++)
+            for (int i = minimumLabels; i < axisLabelsX.transform.childCount; i++) {
                 Destroy(axisLabelsX.transform.GetChild(i).gameObject);
+                Destroy(axisGridsX.transform.GetChild(i).gameObject);
+            }
         }
 
         canvasHeight = GetComponent<RectTransform>().rect.height * transform.localScale.y;
@@ -169,35 +173,44 @@ public class Graph : MonoBehaviour
             (Camera.main.WorldToScreenPoint(new Vector3(0, step, 0)).y - Camera.main.WorldToScreenPoint(Vector3.zero).y) );
 
         if (axisLabelsY.transform.childCount < minimumLabels) {
-            for (int i = 0; i < minimumLabels - axisLabelsY.transform.childCount; i++)
+            for (int i = 0; i < minimumLabels - axisLabelsY.transform.childCount; i++) {
                 Instantiate(axisLabel, new Vector3(0, 0, 0), Quaternion.identity, axisLabelsY.transform);
+                Instantiate(YAxisPrefab, new Vector3(0, 0, 0), Quaternion.identity, axisGridsY.transform);
+            
+            }
         } else if (axisLabelsY.transform.childCount > minimumLabels) {
-            for (int i = minimumLabels; i < axisLabelsY.transform.childCount; i++) 
+            for (int i = minimumLabels; i < axisLabelsY.transform.childCount; i++) {
                 Destroy(axisLabelsY.transform.GetChild(i).gameObject);
+                Destroy(axisGridsY.transform.GetChild(i).gameObject);
+            }
         }
         
-        
+        int padding  = 35;
         minimumXAxis = (int) (Camera.main.ScreenToWorldPoint(Vector3.zero).x / step); //At the bottom left corner of the screen (0,0) find out this coordinate in the world
         for (int i = 0; i < axisLabelsX.transform.childCount; i++) {
             Vector3 pos = Camera.main.WorldToScreenPoint(new Vector3(step * (minimumXAxis + i - 1), 0, 0));
-            if (pos.y < 10)
-                pos.y = 10;
-            else if (pos.y > canvasHeight - 15)
-                pos.y = canvasHeight - 15;
+            if (pos.y < padding)
+                pos.y = padding;
+            else if (pos.y > canvasHeight - padding)
+                pos.y = canvasHeight - padding;
             
             axisLabelsX.transform.GetChild(i).position = pos;
+            axisGridsX.transform.GetChild(i).position = new Vector3(pos.x, canvasHeight / 2, 0);
+
             axisLabelsX.transform.GetChild(i).GetComponent<TextMeshProUGUI>().text = formatLabel(xScale * step *(minimumXAxis + i - 1));
         }
         
         minimumYAxis = (int) (Camera.main.ScreenToWorldPoint(Vector3.zero).y / step);
         for (int i = 0; i < axisLabelsY.transform.childCount; i++) {
             Vector3 pos = Camera.main.WorldToScreenPoint(new Vector3(0, step * (minimumYAxis + i - 1), 0));
-            if (pos.x < 35)
-                pos.x = 35;
-            else if (pos.x > canvasWidth - 35)
-                pos.x = canvasWidth - 35;
+            if (pos.x < padding)
+                pos.x = padding;
+            else if (pos.x > canvasWidth - padding)
+                pos.x = canvasWidth - padding;
 
             axisLabelsY.transform.GetChild(i).position = pos;
+            axisGridsY.transform.GetChild(i).position = new Vector3(canvasWidth / 2, pos.y,  0);
+
             axisLabelsY.transform.GetChild(i).GetComponent<TextMeshProUGUI>().text = formatLabel(yScale * step * (minimumYAxis + i - 1));
         }
     }
