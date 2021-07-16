@@ -57,14 +57,18 @@ public class CameraControls : MonoBehaviour
             else if (Input.GetKey(KeyCode.Q))
                 Camera.main.orthographicSize += 0.1f;
 
-            if (Input.GetKey(KeyCode.Z))
+            if (Input.GetKey(KeyCode.Z)) {
                 setCameraPosition(0f, 0f);
+                Camera.main.orthographicSize = 5f;
+            }
         }
 
 
 
 
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(0) && (!interacting || (
+            create.graphGameObject.activeSelf && keyboardAllowed
+            ))) //Graph is shown, and a label is selected.
             dragging = true;
         else if (Input.GetMouseButtonUp(0)) 
             dragging = false;
@@ -77,13 +81,13 @@ public class CameraControls : MonoBehaviour
                 transform.Translate(Camera.main.ScreenToWorldPoint(posLastFrame) - Camera.main.ScreenToWorldPoint(currentPos)); 
         }
         
-        if (cameraBounded) {
-            Camera.main.orthographicSize += -Input.mouseScrollDelta.y;
-            if (Camera.main.orthographicSize < 1f)
-                Camera.main.orthographicSize = 1f;
-            else if (cameraBounded && Camera.main.orthographicSize > 30f)
-                Camera.main.orthographicSize = 30f;    
-            }    
+        Camera.main.orthographicSize += -Input.mouseScrollDelta.y;
+        if (Camera.main.orthographicSize < 1f)
+            Camera.main.orthographicSize = 1f;
+        else if (Camera.main.orthographicSize > 100f) {
+            Camera.main.orthographicSize = 100f;
+            create.newUrgentAnnouncement("Scroll Limit Reached", 30);    
+        }
         
     }
     

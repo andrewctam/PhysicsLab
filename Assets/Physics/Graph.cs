@@ -8,13 +8,13 @@ using TMPro;
 
 public class Graph : MonoBehaviour
 {
-    public float lastPlot, plotFrequency, xScale, yScale;
+    public float lastPlot, plotFrequency, xScale, yScale, canvasWidth, canvasHeight;
     public GameObject graphGameObject, coordinatePoint, points, axisLabelsX, axisLabelsY, axisLabel;
     public CreateObjects create;
     public TMP_InputField xScaleInput, yScaleInput, plotFreqInput;
     public List<GameObject> graphedObjects;
     public TMP_Dropdown xAxisDropdown, yAxisDropdown;
-    public int minimumXAxis, minimumYAxis;
+    public int minimumXAxis, minimumYAxis, step;
    
     // Start is called before the first frame update
     void Start()
@@ -23,6 +23,7 @@ public class Graph : MonoBehaviour
         lastPlot = 0f;
         xScale = 1f;
         yScale = 1f;
+        step = 1;
         graphedObjects = new List<GameObject>();  
     }
 
@@ -43,20 +44,8 @@ public class Graph : MonoBehaviour
 
         if (graphGameObject.activeSelf) {
             updateNumberLabels(); 
-
-            minimumXAxis = (int) Camera.main.ScreenToWorldPoint(Vector3.zero).x;
-            for (int i = 0; i < axisLabelsX.transform.childCount; i++) {
-                axisLabelsX.transform.GetChild(i).position = Camera.main.WorldToScreenPoint(new Vector3((minimumXAxis + i - 1), 0, 0));
-                axisLabelsX.transform.GetChild(i).GetComponent<TextMeshProUGUI>().text = (xScale * (minimumXAxis + i - 1)).ToString("F2");
-            }
-            minimumYAxis = (int) Camera.main.ScreenToWorldPoint(Vector3.zero).y;
-            for (int i = 0; i < axisLabelsY.transform.childCount; i++) {
-                axisLabelsY.transform.GetChild(i).position = Camera.main.WorldToScreenPoint(new Vector3(0, (minimumYAxis + i - 1), 0));
-                axisLabelsY.transform.GetChild(i).GetComponent<TextMeshProUGUI>().text = (yScale * (minimumYAxis + i - 1)).ToString("F2");
-            }
         }
-
-            
+      
     }
 
     public void graphPoint(float x, float y) {
@@ -93,7 +82,36 @@ public class Graph : MonoBehaviour
     public void updateScale() {
         xScale = float.Parse(xScaleInput.text);
         yScale = float.Parse(yScaleInput.text);
+        
+        if (xScale > 10000) {
+            xScale = 10000;
+            xScaleInput.text = "10000";
+            create.newAnnouncement("Scale Limit is 10,000", 120);
 
+        } else if (xScale < -10000) {
+            xScale = -10000;
+            xScaleInput.text = "-10000";
+            create.newAnnouncement("Scale Limit is -10,000", 120);
+        } else if (xScale == 0) {
+            xScale = 1;
+            xScaleInput.text = "1";
+            create.newAnnouncement("Scale can not be 0", 120);
+        }
+
+        if (yScale > 10000) {
+            yScale = 10000;
+            yScaleInput.text = "10000";
+            create.newAnnouncement("Scale Limit is 10,000", 120);
+
+        } else if (yScale < -10000) {
+            yScale = -10000;
+            yScaleInput.text = "-10000";
+            create.newAnnouncement("Scale Limit is -10,000", 120);
+        } else if (yScale == 0) {
+            yScale = 1;
+            yScaleInput.text = "1";
+            create.newAnnouncement("Scale can not be 0", 120);
+        }
 
         points.transform.localScale = new Vector3(1/xScale, 1/yScale, 1f);
         for (int i = 0; i < points.transform.childCount; i++) {
@@ -121,8 +139,23 @@ public class Graph : MonoBehaviour
     }
 
     public void updateNumberLabels() {
-        int minimumLabels = 2 + (int) Mathf.Ceil(GetComponent<RectTransform>().rect.width * transform.localScale.x / (
-            Camera.main.WorldToScreenPoint(new Vector3(1, 0, 0)).x - Camera.main.WorldToScreenPoint(Vector3.zero).x) );
+        float zoomLevel = Camera.main.orthographicSize;
+            if      (zoomLevel > 90f) step = 50;
+            else if (zoomLevel > 80f) step = 45;
+            else if (zoomLevel > 70f) step = 35;
+            else if (zoomLevel > 60f) step = 30;
+            else if (zoomLevel > 40f) step = 25;
+            else if (zoomLevel > 25f) step = 15;
+            else if (zoomLevel > 20f) step = 10;
+            else if (zoomLevel > 15f) step = 5; 
+            else if (zoomLevel > 10f) step = 3;  
+            else if (zoomLevel > 5f)  step = 2;
+            else                      step = 1;
+
+        canvasWidth = GetComponent<RectTransform>().rect.width * transform.localScale.x;
+        int minimumLabels = 2 + (int) Mathf.Ceil( canvasWidth / 
+            (Camera.main.WorldToScreenPoint(new Vector3(step, 0, 0)).x - Camera.main.WorldToScreenPoint(Vector3.zero).x) );
+        
         if (axisLabelsX.transform.childCount < minimumLabels) {
             for (int i = 0; i < minimumLabels - axisLabelsX.transform.childCount; i++)
                 Instantiate(axisLabel, new Vector3(0, 0, 0), Quaternion.identity, axisLabelsX.transform);
@@ -131,8 +164,10 @@ public class Graph : MonoBehaviour
                 Destroy(axisLabelsX.transform.GetChild(i).gameObject);
         }
 
-        minimumLabels = 2 + (int) Mathf.Ceil(GetComponent<RectTransform>().rect.height * transform.localScale.y / (
-            Camera.main.WorldToScreenPoint(new Vector3(0, 1, 0)).y - Camera.main.WorldToScreenPoint(Vector3.zero).y) );
+        canvasHeight = GetComponent<RectTransform>().rect.height * transform.localScale.y;
+        minimumLabels = 2 + (int) Mathf.Ceil( canvasHeight / 
+            (Camera.main.WorldToScreenPoint(new Vector3(0, step, 0)).y - Camera.main.WorldToScreenPoint(Vector3.zero).y) );
+
         if (axisLabelsY.transform.childCount < minimumLabels) {
             for (int i = 0; i < minimumLabels - axisLabelsY.transform.childCount; i++)
                 Instantiate(axisLabel, new Vector3(0, 0, 0), Quaternion.identity, axisLabelsY.transform);
@@ -140,6 +175,52 @@ public class Graph : MonoBehaviour
             for (int i = minimumLabels; i < axisLabelsY.transform.childCount; i++) 
                 Destroy(axisLabelsY.transform.GetChild(i).gameObject);
         }
+        
+        
+        minimumXAxis = (int) (Camera.main.ScreenToWorldPoint(Vector3.zero).x / step); //At the bottom left corner of the screen (0,0) find out this coordinate in the world
+        for (int i = 0; i < axisLabelsX.transform.childCount; i++) {
+            Vector3 pos = Camera.main.WorldToScreenPoint(new Vector3(step * (minimumXAxis + i - 1), 0, 0));
+            if (pos.y < 10)
+                pos.y = 10;
+            else if (pos.y > canvasHeight - 15)
+                pos.y = canvasHeight - 15;
+            
+            axisLabelsX.transform.GetChild(i).position = pos;
+            axisLabelsX.transform.GetChild(i).GetComponent<TextMeshProUGUI>().text = formatLabel(xScale * step *(minimumXAxis + i - 1));
+        }
+        
+        minimumYAxis = (int) (Camera.main.ScreenToWorldPoint(Vector3.zero).y / step);
+        for (int i = 0; i < axisLabelsY.transform.childCount; i++) {
+            Vector3 pos = Camera.main.WorldToScreenPoint(new Vector3(0, step * (minimumYAxis + i - 1), 0));
+            if (pos.x < 35)
+                pos.x = 35;
+            else if (pos.x > canvasWidth - 35)
+                pos.x = canvasWidth - 35;
+
+            axisLabelsY.transform.GetChild(i).position = pos;
+            axisLabelsY.transform.GetChild(i).GetComponent<TextMeshProUGUI>().text = formatLabel(yScale * step * (minimumYAxis + i - 1));
+        }
+    }
+
+    public string formatLabel(float num) {
+        if (num >= 10000 ||
+            num <= -10000 ||
+            (num > 0 && num < 0.01) ||
+            (num < 0 && num > -0.01)) {
+            string result = num.ToString("e1");
+
+            if (result.Contains("+00"))
+                result = result.Replace("+00", "");
+            else if (result.Contains("-00"))
+                result = result.Replace("-00", "-");
+            else if (result.Contains("+0"))
+                result = result.Replace("+0", "");
+            else if (result.Contains("-0"))
+                result = result.Replace("-0", "-");
+
+            return result;
+        } else
+            return Mathf.Round(num * 100f) / 100f + "";
     }
     
 }
