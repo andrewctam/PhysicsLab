@@ -24,9 +24,14 @@ public class Selector : MonoBehaviour
 
     public void setToCurrent() {
         CreateObjects create = FindObjectOfType<CreateObjects>();
-        create.updateCurrent(id);
-        create.createdObjects[id].GetComponent<PointMass>().draggable = true;
-        create.openEditorNewObject();
+        if (create.current == id) {
+            Vector3 pos = create.createdObjects[id].transform.position;
+            Camera.main.transform.position = new Vector3(pos.x, pos.y, Camera.main.transform.position.z);
+        } else {
+            create.updateCurrent(id);
+            create.createdObjects[id].GetComponent<PointMass>().draggable = true;
+            create.openEditorNewObject();
+        }
 
     }
 
