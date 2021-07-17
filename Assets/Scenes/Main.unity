@@ -4039,7 +4039,7 @@ MonoBehaviour:
   toggleRot: {fileID: 49754742}
   labGameObject: {fileID: 542131766}
   graphGameObject: {fileID: 1119233051}
-  graphButton: {fileID: 1545765063}
+  toggleGraphingButton: {fileID: 1545765063}
   labBar: {fileID: 211766017}
   graphBar: {fileID: 578886734}
   graphSettings: {fileID: 1157978871}

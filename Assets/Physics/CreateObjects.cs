@@ -7,7 +7,7 @@ using TMPro;
 
 public class CreateObjects : MonoBehaviour
 {
-    public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, labGameObject, graphGameObject, graphButton, labBar, graphBar, graphSettings, objectSelector, objectSelectorContainer;
+    public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, labGameObject, graphGameObject, toggleGraphingButton, labBar, graphBar, graphSettings, objectSelector, objectSelectorContainer;
     public TextMeshProUGUI objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText, selectorText;
     public TMP_InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, nameInput, selectorSearchInput;
     public List<GameObject> createdObjects, selectorsList;
@@ -344,9 +344,9 @@ public class CreateObjects : MonoBehaviour
         
         PointMass currentPointMassScript = createdObjects[current].GetComponent<PointMass>();
         if (currentPointMassScript.isGraphing) 
-            graphButton.GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);
+            toggleGraphingButton.GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);
         else
-            graphButton.GetComponent<Image>().color = Color.white;
+            toggleGraphingButton.GetComponent<Image>().color = Color.white;
             
         createdObjects[current].GetComponent<SpriteRenderer>().color = currentPointMassScript.defaultColor;
         selectorsList[current].GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);

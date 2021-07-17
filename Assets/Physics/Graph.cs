@@ -69,12 +69,12 @@ public class Graph : MonoBehaviour
             graphedObjects.Add(currentGameObj);
             create.graphSettings.SetActive(true);
             currentGameObj.GetComponent<PointMass>().isGraphing = true;
-            create.graphButton.GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);
+            create.toggleGraphingButton.GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);
         } else {
             graphedObjects.Remove(currentGameObj);
             create.graphSettings.SetActive(false);
             currentGameObj.GetComponent<PointMass>().isGraphing = false;
-            create.graphButton.GetComponent<Image>().color = Color.white;
+            create.toggleGraphingButton.GetComponent<Image>().color = Color.white;
 
         }
     }
@@ -152,6 +152,7 @@ public class Graph : MonoBehaviour
             else if (zoomLevel > 5f)  step = 2;
             else                      step = 1;
 
+        //Create or Destroy Extra labels if the canvas size changes or if the user zooms in/out.
         canvasWidth = GetComponent<RectTransform>().rect.width * transform.localScale.x;
         int minimumLabels = 2 + (int) Mathf.Ceil( canvasWidth / 
             (Camera.main.WorldToScreenPoint(new Vector3(step, 0, 0)).x - Camera.main.WorldToScreenPoint(Vector3.zero).x) );
@@ -185,6 +186,9 @@ public class Graph : MonoBehaviour
             }
         }
         
+        //Determine the text and position of labels. There are always two extra labels to allow for the "wrap around" effect
+        //Once the camera scrolls by the value of step, minimumXAxis will increase by 1. The label at (i-1) will be moved to the label at i, and each label will have their text
+        //increased appropriately based on the scale and step.
         int padding  = 35;
         minimumXAxis = (int) (Camera.main.ScreenToWorldPoint(Vector3.zero).x / step); //At the bottom left corner of the screen (0,0) find out this coordinate in the world
         for (int i = 0; i < axisLabelsX.transform.childCount; i++) {

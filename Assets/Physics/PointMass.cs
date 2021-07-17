@@ -69,12 +69,13 @@ public class PointMass : MonoBehaviour
     }
 
     void OnMouseDown() {
-        
-        isPressed = true; 
-        if (create.updateCurrent(ID)) { //if different object is selected
-            draggable = false;
+        if (!create.graphGameObject.activeSelf){
+            isPressed = true; 
+            if (create.updateCurrent(ID)) { //if different object is selected
+                draggable = false;
+            }
+            create.openEditorNewObject();
         }
-        create.openEditorNewObject();
     }
 
     void OnMouseUp() {
