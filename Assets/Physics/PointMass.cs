@@ -8,13 +8,18 @@ public class PointMass : MonoBehaviour
     public Rigidbody2D rb;
     public Vector3 pos0, vel0, acc0; 
     public float xAxis, yAxis;
-    public int xAxisIndex, yAxisIndex, ID;
+    public int xAxisIndex, yAxisIndex, ID, prefabID;
     public CreateObjects create;
     public bool isPressed, started, canRotate, canTranslateX, canTranslateY, isGraphing, draggable;
     public Graph grapher;
     public Color defaultColor, alphaDefaultColor;
     public Vector2 currentVelocity, velocityLastFrame, acceleration;
     public GameObject selector;
+
+    public override string ToString() {
+        int boolToInt(bool isTrue) { if (isTrue) return 1; else return 0; }
+        return $"{prefabID}`{gameObject.name}`{rb.mass}`{transform.localScale.x}`{transform.localScale.y}`{pos0.x}`{pos0.y}`{vel0.x}`{vel0.y}`{acc0.x}`{acc0.y}`{xAxisIndex}`{yAxisIndex}`{boolToInt(isGraphing)}`{boolToInt(canRotate)}`{boolToInt(canTranslateX)}`{boolToInt(canTranslateY)}~";
+    } 
 
     // Start is called before the first frame update
     void Start()

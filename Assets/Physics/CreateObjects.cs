@@ -460,4 +460,18 @@ public class CreateObjects : MonoBehaviour
         objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * currentIndex);
     }
 
+    public void saveLab() {
+        string outputString = $"{Physics2D.gravity.y}`{timeSpeed}`{grapher.xScale}`{grapher.yScale}`{grapher.plotFrequency}`{labCameraPos.x}`{labCameraPos.y}`{labCameraPos.z}`{graphCameraPos.x}`{graphCameraPos.y}`{graphCameraPos.z}~";
+
+        if (outputString.Substring(0, 18) == "-9.80665`1`1`1`0.5")
+            outputString = "`" + outputString.Substring(19);
+            
+
+        foreach (GameObject obj in createdObjects) {
+            outputString += obj.GetComponent<PointMass>().ToString();
+        }
+
+        Debug.Log(outputString);
+    }
+
 }
