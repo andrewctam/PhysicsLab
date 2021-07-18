@@ -10,7 +10,9 @@ public class Graph : MonoBehaviour
 {
     public float lastPlot, plotFrequency, xScale, yScale, canvasWidth, canvasHeight;
     public GameObject graphGameObject, coordinatePoint, points, axisLabelsX, axisLabelsY, axisLabel, axisGridsX, axisGridsY, XAxisPrefab, YAxisPrefab;
+    public Slider colorSlider; 
     public CreateObjects create;
+    public Image pointColorDisplay;
     public TMP_InputField xScaleInput, yScaleInput, plotFreqInput;
     public List<GameObject> graphedObjects;
     public TMP_Dropdown xAxisDropdown, yAxisDropdown;
@@ -50,7 +52,8 @@ public class Graph : MonoBehaviour
 
     public void graphPoint(float x, float y) {
         GameObject createdPoint = Instantiate(coordinatePoint, new Vector3(x, y, 0), Quaternion.identity, points.transform);
-        createdPoint.transform.localScale = new Vector3(0.1f * xScale, 0.1f * yScale, 1f);
+        createdPoint.GetComponent<SpriteRenderer>().color = create.createdObjects[create.current].GetComponent<PointMass>().graphPointColor;
+        createdPoint.transform.localScale = new Vector3(xScale, yScale, 1f);
 
     }
 
@@ -115,7 +118,7 @@ public class Graph : MonoBehaviour
 
         points.transform.localScale = new Vector3(1/xScale, 1/yScale, 1f);
         for (int i = 0; i < points.transform.childCount; i++) {
-            points.transform.GetChild(i).transform.localScale = new Vector3(0.1f * xScale, 0.1f * yScale, 1f);
+            points.transform.GetChild(i).transform.localScale = new Vector3(xScale, yScale, 1f);
         }
 
     }
@@ -136,6 +139,69 @@ public class Graph : MonoBehaviour
 
     public void updateYAxis() {
         create.createdObjects[create.current].GetComponent<PointMass>().yAxisIndex = yAxisDropdown.GetComponent<TMP_Dropdown>().value;
+    }
+
+    public void updateColor() {
+        float sliderInput = colorSlider.value;
+        float RGB = sliderInput % 255;
+        Color updatedColor = Color.black;
+        if (sliderInput == 0) {
+            updatedColor = Color.black;
+        } else if (sliderInput < 255) { 
+            updatedColor = new Color(1f                , RGB / 255f        , 0f);
+        } else if (sliderInput < 255 * 2) {
+            updatedColor = new Color((255 - RGB) / 255f, 1f                , 0f);
+        } else if (sliderInput < 255 * 3) {
+            updatedColor = new Color(0f                , 1f                , RGB / 255f);
+        } else if (sliderInput < 255 * 4) {
+            updatedColor = new Color(0f                , (255 - RGB) / 255f, 1f);
+        } else if (sliderInput < 255 * 5) {
+            updatedColor = new Color(RGB / 255f        , 0f                , 1f);
+        } else if (sliderInput < 255 * 6) {
+            updatedColor = new Color(1f                , 0f                , (255 - RGB) / 255f);
+        }
+        
+        create.createdObjects[create.current].GetComponent<PointMass>().graphPointColor = updatedColor;
+        pointColorDisplay.color = updatedColor;
+    }
+    
+    public int colorToInt(Color colorInput) {
+        if (colorInput == Color.black) {
+            return 0;
+        }
+
+        //reverse solving updateColor() gives the formula sliderInput = 255(RGB + n) or  255 (1 - RGB + n) depending on increasing or decreasing values
+        float residual = 0; //Number of 255s. 0.5 would mean half a 255.
+        float n = 0; 
+
+        if (colorInput.r == 1f) {
+            if (colorInput.g == 0) {
+                residual = 1 - colorInput.b;
+                n = 6 - 1; //the n value is the coefficient of 255 in the if statements in updateColor() - 1 
+            } else  {
+                residual = colorInput.g;
+                n = 1 - 1;
+            }
+        } else if (colorInput.g == 1f) {
+            if (colorInput.b == 0) {
+                residual = 1 - colorInput.r;
+                n = 2 - 1;
+            } else  {
+                residual = colorInput.b;
+                n = 3 - 1;
+            }
+        } else if (colorInput.b == 1f) {
+            if (colorInput.r == 0)  {
+                residual = 1 - colorInput.g;
+                n = 4 - 1;
+            } else  {
+                residual = colorInput.r;
+                n = 5 - 1;
+            }
+        } else 
+            return -1;
+            
+        return (int) Mathf.Round(255 * (residual + n));       
     }
 
     public void updateNumberLabels() {

@@ -12,7 +12,7 @@ public class PointMass : MonoBehaviour
     public CreateObjects create;
     public bool isPressed, started, canRotate, canTranslateX, canTranslateY, isGraphing, draggable;
     public Graph grapher;
-    public Color defaultColor, alphaDefaultColor;
+    public Color defaultColor, alphaDefaultColor, graphPointColor;
     public Vector2 currentVelocity, velocityLastFrame, acceleration;
     public GameObject selector;
 
@@ -36,6 +36,7 @@ public class PointMass : MonoBehaviour
         
         alphaDefaultColor = gameObject.GetComponent<SpriteRenderer>().color;
         defaultColor = new Color(alphaDefaultColor.r, alphaDefaultColor.g, alphaDefaultColor.b, 1f);     
+        graphPointColor = Color.black;
     }
     void FixedUpdate() {
         velocityLastFrame = currentVelocity;

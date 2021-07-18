@@ -67,16 +67,12 @@ public class CreateObjects : MonoBehaviour
                     createdObjects[i].GetComponent<PointMass>().started = false;
         }
             
-            
         if (cameraSettings.keyboardAllowed && Input.GetKeyDown(KeyCode.Space))
             if (started) {
                 togglePause();
             } else {
                 startLab();
             }
-
-        
-
     }
 
     /*announcement methods*/
@@ -256,7 +252,7 @@ public class CreateObjects : MonoBehaviour
                     barChild.SetActive(false);
             }
 
-                
+
         }
     }   
 
@@ -270,9 +266,6 @@ public class CreateObjects : MonoBehaviour
         }
     }
     
-
-
-
 
     /*Creation methods*/
 
@@ -353,6 +346,8 @@ public class CreateObjects : MonoBehaviour
         graphSettings.SetActive(currentPointMassScript.isGraphing);
         grapher.xAxisDropdown.value = currentPointMassScript.xAxisIndex;
         grapher.yAxisDropdown.value = currentPointMassScript.yAxisIndex;
+        grapher.colorSlider.value = grapher.colorToInt(createdObjects[current].GetComponent<PointMass>().graphPointColor);
+        grapher.pointColorDisplay.color = createdObjects[current].GetComponent<PointMass>().graphPointColor;
 
 
         objectIDText.text = "Object ID: " + currentPointMassScript.ID;
