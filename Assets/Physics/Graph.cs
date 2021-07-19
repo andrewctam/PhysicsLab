@@ -36,7 +36,7 @@ public class Graph : MonoBehaviour
         if (lastPlot >= plotFrequency && create.started && graphedObjects.Count > 0) {
             foreach (GameObject element in graphedObjects) {
                 PointMass script = element.GetComponent<PointMass>();
-                graphPoint(script.xAxis / xScale, script.yAxis / yScale);
+                graphPoint(script.xAxis / xScale, script.yAxis / yScale, script.graphPointColor);
             }
             lastPlot = 0f;
         }
@@ -50,9 +50,9 @@ public class Graph : MonoBehaviour
       
     }
 
-    public void graphPoint(float x, float y) {
+    public void graphPoint(float x, float y, Color pointColor) {
         GameObject createdPoint = Instantiate(coordinatePoint, new Vector3(x, y, 0), Quaternion.identity, points.transform);
-        createdPoint.GetComponent<SpriteRenderer>().color = create.createdObjects[create.current].GetComponent<PointMass>().graphPointColor;
+        createdPoint.GetComponent<SpriteRenderer>().color = pointColor;
         createdPoint.transform.localScale = new Vector3(xScale, yScale, 1f);
 
     }

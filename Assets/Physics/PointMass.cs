@@ -48,6 +48,11 @@ public class PointMass : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
+        if (isGraphing) {
+            xAxis = graphAxisOptions(xAxisIndex);
+            yAxis = graphAxisOptions(yAxisIndex);
+        }
+
         if (create.current == ID)  {
             if (isPressed && (Input.GetKey(KeyCode.LeftShift) || draggable)) {
                 create.noObjectBeingDragged = false;
@@ -65,11 +70,6 @@ public class PointMass : MonoBehaviour
                 
             } else {
                 create.noObjectBeingDragged = true;
-            }
-
-            if (isGraphing) {
-                xAxis = graphAxisOptions(xAxisIndex);
-                yAxis = graphAxisOptions(yAxisIndex);
             }
         }
     }
