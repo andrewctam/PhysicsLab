@@ -73,6 +73,15 @@ public class CreateObjects : MonoBehaviour
             } else {
                 startLab();
             }
+        
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            if (graphGameObject.activeSelf)
+                toggleGraph();
+            else if (graphBar.activeSelf)
+                toggleGraphSettings();
+            else if (editor.activeSelf)
+                closeEditor();
+        }
     }
 
     /*announcement methods*/
@@ -455,12 +464,23 @@ public class CreateObjects : MonoBehaviour
         objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * currentIndex);
     }
 
+    public float roundToTwo(float num) {
+        return Mathf.Round(num * 100f) / 100f;
+    }
+
     public void saveLab() {
         string outputString = $"{Physics2D.gravity.y}`{timeSpeed}`{grapher.xScale}`{grapher.yScale}`{grapher.plotFrequency}`{labCameraPos.x}`{labCameraPos.y}`{labCameraPos.z}`{graphCameraPos.x}`{graphCameraPos.y}`{graphCameraPos.z}~";
-
-        if (outputString.Substring(0, 18) == "-9.80665`1`1`1`0.5")
-            outputString = "`" + outputString.Substring(19);
             
+        bool savePoints = true;
+        if (savePoints) {
+            GameObject point;
+            Transform pointsContainer = grapher.points.transform;
+            for (int i = 0; i < pointsContainer.childCount; i++) {
+                point = pointsContainer.GetChild(i).gameObject;
+                outputString += $"{roundToTwo(point.transform.position.x)}`{roundToTwo(point.transform.position.y)}`{grapher.colorToInt(point.GetComponent<SpriteRenderer>().color)}`";
+            } 
+        }
+        outputString += "~";
 
         foreach (GameObject obj in createdObjects) {
             outputString += obj.GetComponent<PointMass>().ToString();
