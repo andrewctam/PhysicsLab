@@ -76,7 +76,7 @@ public class CameraControls : MonoBehaviour
         
         if (create.noObjectBeingDragged) {
             posLastFrame = currentPos;
-            currentPos = (Input.mousePosition);
+            currentPos = Input.mousePosition;
             if (dragging && currentPos != posLastFrame)   
                 transform.Translate(Camera.main.ScreenToWorldPoint(posLastFrame) - Camera.main.ScreenToWorldPoint(currentPos)); 
         }

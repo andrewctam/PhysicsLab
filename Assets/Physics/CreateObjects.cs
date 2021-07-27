@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Runtime.InteropServices;
 
 
 public class CreateObjects : MonoBehaviour
@@ -10,14 +11,24 @@ public class CreateObjects : MonoBehaviour
     public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, labGameObject, graphGameObject, toggleGraphingButton, labBar, graphBar, graphSettings, objectSelector, objectSelectorContainer;
     public TextMeshProUGUI objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText, selectorText;
     public TMP_InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, nameInput, selectorSearchInput;
-    public List<GameObject> createdObjects, selectorsList;
+    public List<GameObject> createdObjects, selectorsList, objectPrefabs;
     public Queue<GameObject> announcementQueue;
-    public int indexOfLast, current;
+    public int indexOfLast, current, numObjects;
     public bool newObjectSelected, started, noObjectBeingDragged;
     public float elapsedTime, timeSpeed;
     public Graph grapher;
     public CameraControls cameraSettings;
     public Vector3 labCameraPos, graphCameraPos;
+
+    [DllImport("__Internal")]
+    private static extern string SaveLab(string saveInput);
+
+    [DllImport("__Internal")]
+    private static extern void LoadNewLab();
+
+    [DllImport("__Internal")]
+    private static extern void CheckForLoad();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +47,8 @@ public class CreateObjects : MonoBehaviour
         graphCameraPos = new Vector3(0, 0, 0);
         labCameraPos = new Vector3(0, 0, 0);
         noObjectBeingDragged = true;
+
+        CheckForLoad();
     }
     // Update is called once per frame
 
@@ -157,6 +170,10 @@ public class CreateObjects : MonoBehaviour
                createdObjects[current].transform.position = new Vector3(x, y, 0);
         }
     }
+    public void refreshPos() {
+        PointMass obj = createdObjects[current].GetComponent<PointMass>();
+        obj.transform.position = obj.pos0;
+    }
 
     public void updateInitialVel() {
         if (!newObjectSelected) {
@@ -178,11 +195,19 @@ public class CreateObjects : MonoBehaviour
             createdObjects[current].GetComponent<PointMass>().vel0 = new Vector3(x, y, 0);
         }
     }
+    public void refreshVelocity() {
+        PointMass obj = createdObjects[current].GetComponent<PointMass>();
+        obj.rb.velocity = obj.vel0;
+    }
 
     public void updateName() {
-
-        createdObjects[current].name = nameInput.text;
-        selectorsList[current].GetComponent<Selector>().updateSelectorName(nameInput.text);
+        string inputtedName = nameInput.text;
+        if (inputtedName.Contains("+") || inputtedName.Contains("~") || inputtedName.Contains(":"))
+            nameInput.text = createdObjects[current].name;
+        else {
+            createdObjects[current].name = inputtedName;
+            selectorsList[current].GetComponent<Selector>().updateSelectorName(nameInput.text);
+        } 
     }
 
     public void updateInitialAcc() {
@@ -281,8 +306,11 @@ public class CreateObjects : MonoBehaviour
 
     public void createNewObject(GameObject prefabToCreate) {
         indexOfLast++;
+        numObjects++;
         createdObjects.Add(Instantiate(prefabToCreate, new Vector3(0, 0, 0), Quaternion.identity, labGameObject.transform));
         createdObjects[indexOfLast].GetComponent<PointMass>().ID = indexOfLast;
+        createdObjects[indexOfLast].GetComponent<PointMass>().started = started;
+
         createdObjects[indexOfLast].name = "Object " + indexOfLast;
 
         objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * (indexOfLast + 1));
@@ -382,6 +410,7 @@ public class CreateObjects : MonoBehaviour
     }
 
     public void destroyCurrent() {
+        numObjects--;
         grapher.graphedObjects.Remove(createdObjects[current].gameObject);
         Destroy(createdObjects[current].gameObject);
         Destroy(selectorsList[current].gameObject);
@@ -432,7 +461,10 @@ public class CreateObjects : MonoBehaviour
         string searchQuery = selectorSearchInput.text.ToUpper();
         int currentIndex = 0;
 
-        if (search || searchQuery != "") {
+
+        if (numObjects < 1)
+            selectorText.text = "No Objects Created";
+        else if (search || searchQuery != "") {
             for (int i = 0; i < selectorsList.Count; i++) {
                 if (createdObjects[i] != null) {
                     if (createdObjects[i].name.ToUpper().Contains(searchQuery) || searchQuery == i + "") {
@@ -444,6 +476,7 @@ public class CreateObjects : MonoBehaviour
                     }
                 }
             }
+            
             if (currentIndex == 0)
                 selectorText.text = "No Results Found";
             else
@@ -464,12 +497,16 @@ public class CreateObjects : MonoBehaviour
         objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * currentIndex);
     }
 
+
+
+
+
     public float roundToTwo(float num) {
         return Mathf.Round(num * 100f) / 100f;
     }
 
     public void saveLab() {
-        string outputString = $"{Physics2D.gravity.y}`{timeSpeed}`{grapher.xScale}`{grapher.yScale}`{grapher.plotFrequency}`{labCameraPos.x}`{labCameraPos.y}`{labCameraPos.z}`{graphCameraPos.x}`{graphCameraPos.y}`{graphCameraPos.z}~";
+        string outputString = $"{-Physics2D.gravity.y}:{timeSpeed}:{grapher.xScale}:{grapher.yScale}:{grapher.plotFrequency}:{labCameraPos.x}:{labCameraPos.y}:{labCameraPos.z}:{graphCameraPos.x}:{graphCameraPos.y}:{graphCameraPos.z}~";
             
         bool savePoints = true;
         if (savePoints) {
@@ -477,16 +514,124 @@ public class CreateObjects : MonoBehaviour
             Transform pointsContainer = grapher.points.transform;
             for (int i = 0; i < pointsContainer.childCount; i++) {
                 point = pointsContainer.GetChild(i).gameObject;
-                outputString += $"{roundToTwo(point.transform.position.x)}`{roundToTwo(point.transform.position.y)}`{grapher.colorToInt(point.GetComponent<SpriteRenderer>().color)}`";
+                outputString += $"{roundToTwo(point.transform.position.x)}:{roundToTwo(point.transform.position.y)}:{grapher.colorToInt(point.GetComponent<SpriteRenderer>().color)}:";
             } 
         }
         outputString += "~";
 
         foreach (GameObject obj in createdObjects) {
-            outputString += obj.GetComponent<PointMass>().ToString();
+            if (obj == null)
+                outputString += "~";
+            else
+                outputString += obj.GetComponent<PointMass>().ToString();
         }
 
-        Debug.Log(outputString);
+        SaveLab("calculating.tools/PL?" + Compression.Compress(outputString));
     }
+    public void loadLabJS() {LoadNewLab();}
+    public void loadLab(string inputString) {
+        bool strToBool(string one) {return one == "1";}
+        
+        inputString = Compression.Decompress(inputString);
+        
+        string[] parts = inputString.Split('~');
+        string[] settings = parts[0].Split(':');
+        Debug.Log(settings[0]);
 
+        float g = float.Parse(settings[0]);
+        Physics2D.gravity = new Vector3(0f, -g, 0f);
+        gravityInput.text = g.ToString(); 
+
+        timeSpeed = float.Parse(settings[1]);
+        timeScaleInput.text = timeSpeed.ToString();
+
+        grapher.xScale = float.Parse(settings[2]);
+        grapher.xScaleInput.text = grapher.xScale.ToString();
+
+        grapher.yScale = float.Parse(settings[3]);
+        grapher.yScaleInput.text = grapher.yScale.ToString();
+        
+        grapher.points.transform.localScale = new Vector3(1/grapher.xScale, 1/grapher.yScale, 1f);
+        
+        grapher.plotFrequency = float.Parse(settings[4]);
+        grapher.plotFreqInput.text = grapher.plotFrequency.ToString(); 
+
+        labCameraPos = new Vector3(float.Parse(settings[5]), float.Parse(settings[6]), float.Parse(settings[7]));
+        graphCameraPos = new Vector3(float.Parse(settings[8]), float.Parse(settings[9]), float.Parse(settings[10]));
+        
+        grapher.deletePoints();
+        string[] graphPoints = parts[1].Split(':');
+        if (graphPoints[0] != "") {
+            for (int i = 0; i < graphPoints.Length - 1; i+=3) {
+                Debug.Log(graphPoints[i] + ":" + graphPoints[i + 1] + ":" + graphPoints[i + 2]);
+                grapher.graphPoint(float.Parse(graphPoints[i]), 
+                                   float.Parse(graphPoints[i + 1]), 
+                                   grapher.intToColor(int.Parse(graphPoints[i + 2])));
+            }
+        }
+
+
+        for (int i = 0; i < indexOfLast + 1; i++) {
+            Destroy(createdObjects[i]);
+            Destroy(selectorsList[i]);
+        }
+        createdObjects = new List<GameObject>();
+        selectorsList = new List<GameObject>();
+        indexOfLast = -1;
+        current = -1;
+        numObjects = 0;
+        
+        string[] currentObject;
+        PointMass objScript;
+        GameObject createdSelector;
+        for (int i = 2; i < parts.Length - 1; i++) {
+            currentObject = parts[i].Split(':');
+            if (currentObject[0] == "") {
+                createdObjects.Add(null);
+                selectorsList.Add(null);
+            } else {
+                numObjects++;
+                createdObjects.Add(Instantiate(objectPrefabs[int.Parse(currentObject[0])], new Vector3(0, 0, 0), Quaternion.identity, labGameObject.transform));
+                createdObjects[i - 2].name = currentObject[1].Replace("+", " ");
+                createdObjects[i - 2].GetComponent<Rigidbody2D>().mass = float.Parse(currentObject[2]); 
+                createdObjects[i - 2].transform.localScale = new Vector3(float.Parse(currentObject[3]), float.Parse(currentObject[4]), 1f);
+
+
+                Debug.Log(currentObject[5] + " " + currentObject[6]);
+                objScript = createdObjects[i - 2].GetComponent<PointMass>();
+                objScript.ID = i - 2;
+                objScript.pos0 = new Vector3(float.Parse(currentObject[5]), float.Parse(currentObject[6]), 0f);
+                objScript.vel0 = new Vector3(float.Parse(currentObject[7]), float.Parse(currentObject[8]), 0f);
+                objScript.acc0 = new Vector3(float.Parse(currentObject[9]), float.Parse(currentObject[10]), 0f);
+
+                objScript.xAxisIndex = int.Parse(currentObject[11]);
+                objScript.yAxisIndex = int.Parse(currentObject[12]);
+
+                objScript.isGraphing = strToBool(currentObject[13]);
+                objScript.canRotate = strToBool(currentObject[14]);
+                objScript.canTranslateX = strToBool(currentObject[15]);
+                objScript.canTranslateY = strToBool(currentObject[16]);
+                objScript.graphPointColor = grapher.intToColor(int.Parse(currentObject[17]));
+
+                if (objScript.isGraphing)        
+                    grapher.graphedObjects.Add(createdObjects[i - 2]);
+
+                objectSelectorContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * (i - 2 + 1));
+                createdSelector = Instantiate(objectSelector, new Vector3(0, 0, 0), Quaternion.identity, objectSelectorContainer.transform);
+                selectorsList.Add(createdSelector);
+                createdSelector.GetComponent<Selector>().updateInfo(i - 2, createdObjects[i - 2].name, createdObjects[i - 2].GetComponent<SpriteRenderer>()); 
+            }
+        }
+
+        
+        updateSelectors(true);
+        PointMass currentObj;
+        indexOfLast = createdObjects.Count - 1;
+        Time.timeScale = 0;
+        for (int i = 0; i < indexOfLast + 1; i++)
+            if (createdObjects[i] != null) {
+                currentObj = createdObjects[i].GetComponent<PointMass>();
+                currentObj.gameObject.transform.position = currentObj.pos0;
+            }  
+    } 
 }

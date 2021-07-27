@@ -18,7 +18,8 @@ public class PointMass : MonoBehaviour
 
     public override string ToString() {
         int boolToInt(bool isTrue) { if (isTrue) return 1; else return 0; }
-        return $"{prefabID}`{gameObject.name}`{rb.mass}`{transform.localScale.x}`{transform.localScale.y}`{pos0.x}`{pos0.y}`{vel0.x}`{vel0.y}`{acc0.x}`{acc0.y}`{xAxisIndex}`{yAxisIndex}`{boolToInt(isGraphing)}`{boolToInt(canRotate)}`{boolToInt(canTranslateX)}`{boolToInt(canTranslateY)}~";
+        string formattedName = gameObject.name.Replace(" ", "+");
+        return $"{prefabID}:{formattedName}:{rb.mass}:{transform.localScale.x}:{transform.localScale.y}:{pos0.x}:{pos0.y}:{vel0.x}:{vel0.y}:{acc0.x}:{acc0.y}:{xAxisIndex}:{yAxisIndex}:{boolToInt(isGraphing)}:{boolToInt(canRotate)}:{boolToInt(canTranslateX)}:{boolToInt(canTranslateY)}:{grapher.colorToInt(graphPointColor)}~";
     } 
 
     // Start is called before the first frame update
@@ -26,17 +27,10 @@ public class PointMass : MonoBehaviour
     {
         create = FindObjectOfType<CreateObjects>();
         grapher = FindObjectOfType<Graph>();
-        started = false;
         rb = GetComponent<Rigidbody2D>();
-        pos0 = new Vector3(0, 0, 0);
-        vel0 = new Vector3(0, 0, 0);
-        acc0 = new Vector3(0, 0, 0);
-        xAxisIndex = 0;
-        yAxisIndex = 1;
         
         alphaDefaultColor = gameObject.GetComponent<SpriteRenderer>().color;
         defaultColor = new Color(alphaDefaultColor.r, alphaDefaultColor.g, alphaDefaultColor.b, 1f);     
-        graphPointColor = Color.black;
     }
     void FixedUpdate() {
         velocityLastFrame = currentVelocity;
@@ -75,7 +69,7 @@ public class PointMass : MonoBehaviour
     }
 
     void OnMouseDown() {
-        if (!create.graphGameObject.activeSelf){
+        if (!create.graphGameObject.activeSelf && !create.cameraSettings.interacting){
             isPressed = true; 
             if (create.updateCurrent(ID)) { //if different object is selected
                 draggable = false;

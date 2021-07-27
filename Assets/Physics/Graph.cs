@@ -142,27 +142,29 @@ public class Graph : MonoBehaviour
     }
 
     public void updateColor() {
-        float sliderInput = colorSlider.value;
-        float RGB = sliderInput % 255;
-        Color updatedColor = Color.black;
-        if (sliderInput == 0) {
-            updatedColor = Color.black;
-        } else if (sliderInput < 255) { 
-            updatedColor = new Color(1f                , RGB / 255f        , 0f);
-        } else if (sliderInput < 255 * 2) {
-            updatedColor = new Color((255 - RGB) / 255f, 1f                , 0f);
-        } else if (sliderInput < 255 * 3) {
-            updatedColor = new Color(0f                , 1f                , RGB / 255f);
-        } else if (sliderInput < 255 * 4) {
-            updatedColor = new Color(0f                , (255 - RGB) / 255f, 1f);
-        } else if (sliderInput < 255 * 5) {
-            updatedColor = new Color(RGB / 255f        , 0f                , 1f);
-        } else if (sliderInput < 255 * 6) {
-            updatedColor = new Color(1f                , 0f                , (255 - RGB) / 255f);
-        }
-        
+        Color updatedColor = intToColor((int) colorSlider.value);
+
         create.createdObjects[create.current].GetComponent<PointMass>().graphPointColor = updatedColor;
         pointColorDisplay.color = updatedColor;
+    }
+
+    public Color intToColor(int inputInt) {
+        float RGB = inputInt % 255;
+        if (inputInt == 0) {
+            return Color.black;
+        } else if (inputInt < 255) { 
+            return new Color(1f                , RGB / 255f        , 0f);
+        } else if (inputInt < 255 * 2) {
+            return new Color((255 - RGB) / 255f, 1f                , 0f);
+        } else if (inputInt < 255 * 3) {
+            return new Color(0f                , 1f                , RGB / 255f);
+        } else if (inputInt < 255 * 4) {
+            return new Color(0f                , (255 - RGB) / 255f, 1f);
+        } else if (inputInt < 255 * 5) {
+            return new Color(RGB / 255f        , 0f                , 1f);
+        } else if (inputInt < 255 * 6) {
+            return new Color(1f                , 0f                , (255 - RGB) / 255f);
+        } else return Color.black;
     }
     
     public int colorToInt(Color colorInput) {
