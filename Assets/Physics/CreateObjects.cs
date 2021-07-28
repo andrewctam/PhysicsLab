@@ -553,7 +553,7 @@ public class CreateObjects : MonoBehaviour
                 outputString += obj.GetComponent<PointMass>().ToString();
         }
 
-        SaveLab("calculating.tools/PL?" + Compression.Compress(outputString));
+        SaveLab("andrewtam.org/PhysicsLab?" + Compression.Compress(outputString));
     }
     public void loadLabJS() {LoadNewLab();}
     public void loadLab(string inputString) {
