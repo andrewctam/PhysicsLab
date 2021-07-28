@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 
 public class CreateObjects : MonoBehaviour
 {
-    public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, labGameObject, graphGameObject, toggleGraphingButton, labBar, graphBar, graphSettings, objectSelector, objectSelectorContainer;
+    public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, toggleFrict, labGameObject, graphGameObject, toggleGraphingButton, labBar, graphBar, graphSettings, objectSelector, objectSelectorContainer;
     public TextMeshProUGUI objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText, selectorText;
-    public TMP_InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, nameInput, selectorSearchInput;
+    public TMP_InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, frictionInput, nameInput, selectorSearchInput;
     public List<GameObject> createdObjects, selectorsList, objectPrefabs;
     public Queue<GameObject> announcementQueue;
     public int indexOfLast, current, numObjects;
@@ -19,6 +19,7 @@ public class CreateObjects : MonoBehaviour
     public Graph grapher;
     public CameraControls cameraSettings;
     public Vector3 labCameraPos, graphCameraPos;
+    public PhysicsMaterial2D mat, noFriction;
 
     [DllImport("__Internal")]
     private static extern string SaveLab(string saveInput);
@@ -44,8 +45,8 @@ public class CreateObjects : MonoBehaviour
         
         announcementQueue = new Queue<GameObject>();
 
-        graphCameraPos = new Vector3(0, 0, 0);
-        labCameraPos = new Vector3(0, 0, 0);
+        graphCameraPos = new Vector3(0, 0, -5f);
+        labCameraPos = new Vector3(0, 0, -5f);
         noObjectBeingDragged = true;
 
         CheckForLoad();
@@ -240,6 +241,30 @@ public class CreateObjects : MonoBehaviour
             createdObjects[current].GetComponent<PointMass>().canTranslateX = !createdObjects[current].GetComponent<PointMass>().canTranslateX; 
         }
     }
+    public void toggleFriction() {
+        if (!newObjectSelected) {
+            PointMass obj = createdObjects[current].GetComponent<PointMass>();
+            obj.hasFriction = !obj.hasFriction;
+            if (obj.hasFriction) 
+                createdObjects[current].GetComponent<Collider2D>().sharedMaterial = mat;
+            else
+                createdObjects[current].GetComponent<Collider2D>().sharedMaterial = noFriction;
+
+        }
+
+    }
+
+    public void updateFriction() {
+        mat.friction  = float.Parse(frictionInput.text);
+        labGameObject.transform.GetChild(0).GetComponent<Collider2D>().sharedMaterial = mat;
+
+        foreach (GameObject obj in createdObjects) {
+            if (obj != null && obj.GetComponent<PointMass>().hasFriction) {
+                obj.GetComponent<Collider2D>().sharedMaterial = mat;
+            }
+
+        }
+    }
 
 
 
@@ -257,8 +282,9 @@ public class CreateObjects : MonoBehaviour
             grapher.axisLabelsX.transform.parent.gameObject.SetActive(false);
 
             cameraSettings.cameraBounded = true;
-            graphCameraPos = cameraSettings.setCameraPosition(labCameraPos.x, labCameraPos.y);
-
+            
+            graphCameraPos = cameraSettings.setCameraPosition(labCameraPos.x, labCameraPos.y, labCameraPos.z);
+            
             graphButtonText.text = "Graph Display";
 
             for (int i = 0; i < graphBar.transform.childCount; i++) {
@@ -276,7 +302,7 @@ public class CreateObjects : MonoBehaviour
             grapher.axisLabelsX.transform.parent.gameObject.SetActive(true);
             cameraSettings.cameraBounded = false;
             graphButtonText.text = "Lab Display";
-            labCameraPos = cameraSettings.setCameraPosition(graphCameraPos.x, graphCameraPos.y);
+            labCameraPos = cameraSettings.setCameraPosition(graphCameraPos.x, graphCameraPos.y, graphCameraPos.z);
             
             for (int i = 0; i < graphBar.transform.childCount; i++) {
                 GameObject barChild = graphBar.transform.GetChild(i).gameObject;
@@ -403,7 +429,8 @@ public class CreateObjects : MonoBehaviour
         accY.text = currentPointMassScript.acc0.y + "";
         
         //Update checkboxes
-        toggleRot.GetComponent<Toggle>().isOn = !currentPointMassScript.canRotate;
+        toggleFrict.GetComponent<Toggle>().isOn = currentPointMassScript.hasFriction;
+        toggleRot.GetComponent<Toggle>().isOn = !currentPointMassScript.canRotate; //not since the toggle is Lock Rotation
         toggleX.GetComponent<Toggle>().isOn = !currentPointMassScript.canTranslateX;
         toggleY.GetComponent<Toggle>().isOn = !currentPointMassScript.canTranslateY;
         newObjectSelected = false;
@@ -506,7 +533,7 @@ public class CreateObjects : MonoBehaviour
     }
 
     public void saveLab() {
-        string outputString = $"{-Physics2D.gravity.y}:{timeSpeed}:{grapher.xScale}:{grapher.yScale}:{grapher.plotFrequency}:{labCameraPos.x}:{labCameraPos.y}:{labCameraPos.z}:{graphCameraPos.x}:{graphCameraPos.y}:{graphCameraPos.z}~";
+        string outputString = $"{-Physics2D.gravity.y}:{timeSpeed}:{grapher.xScale}:{grapher.yScale}:{grapher.plotFrequency}:{frictionInput.text}:{labCameraPos.x}:{labCameraPos.y}:{labCameraPos.z}:{graphCameraPos.x}:{graphCameraPos.y}:{graphCameraPos.z}~";
             
         bool savePoints = true;
         if (savePoints) {
@@ -556,8 +583,9 @@ public class CreateObjects : MonoBehaviour
         grapher.plotFrequency = float.Parse(settings[4]);
         grapher.plotFreqInput.text = grapher.plotFrequency.ToString(); 
 
-        labCameraPos = new Vector3(float.Parse(settings[5]), float.Parse(settings[6]), float.Parse(settings[7]));
-        graphCameraPos = new Vector3(float.Parse(settings[8]), float.Parse(settings[9]), float.Parse(settings[10]));
+        frictionInput.text = settings[5];
+        labCameraPos = new Vector3(float.Parse(settings[6]), float.Parse(settings[7]), float.Parse(settings[8]));
+        graphCameraPos = new Vector3(float.Parse(settings[9]), float.Parse(settings[10]), float.Parse(settings[11]));
         
         grapher.deletePoints();
         string[] graphPoints = parts[1].Split(':');
@@ -608,10 +636,25 @@ public class CreateObjects : MonoBehaviour
                 objScript.yAxisIndex = int.Parse(currentObject[12]);
 
                 objScript.isGraphing = strToBool(currentObject[13]);
+                
                 objScript.canRotate = strToBool(currentObject[14]);
+                if (!strToBool(currentObject[14]))
+                    createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints ^= RigidbodyConstraints2D.FreezeRotation;
+
                 objScript.canTranslateX = strToBool(currentObject[15]);
+                if (!strToBool(currentObject[15]))
+                    createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints ^= RigidbodyConstraints2D.FreezePositionX;
+
+
                 objScript.canTranslateY = strToBool(currentObject[16]);
-                objScript.graphPointColor = grapher.intToColor(int.Parse(currentObject[17]));
+                if (!strToBool(currentObject[16]))
+                    createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints ^= RigidbodyConstraints2D.FreezePositionY;
+
+
+                
+                objScript.hasFriction = strToBool(currentObject[17]);
+
+                objScript.graphPointColor = grapher.intToColor(int.Parse(currentObject[18]));
 
                 if (objScript.isGraphing)        
                     grapher.graphedObjects.Add(createdObjects[i - 2]);
@@ -625,6 +668,7 @@ public class CreateObjects : MonoBehaviour
 
         
         updateSelectors(true);
+        updateFriction();
         PointMass currentObj;
         indexOfLast = createdObjects.Count - 1;
         Time.timeScale = 0;

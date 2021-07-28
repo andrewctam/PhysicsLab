@@ -10,7 +10,7 @@ public class PointMass : MonoBehaviour
     public float xAxis, yAxis;
     public int xAxisIndex, yAxisIndex, ID, prefabID;
     public CreateObjects create;
-    public bool isPressed, started, canRotate, canTranslateX, canTranslateY, isGraphing, draggable;
+    public bool isPressed, started, canRotate, canTranslateX, canTranslateY, isGraphing, draggable, hasFriction;
     public Graph grapher;
     public Color defaultColor, alphaDefaultColor, graphPointColor;
     public Vector2 currentVelocity, velocityLastFrame, acceleration;
@@ -19,7 +19,7 @@ public class PointMass : MonoBehaviour
     public override string ToString() {
         int boolToInt(bool isTrue) { if (isTrue) return 1; else return 0; }
         string formattedName = gameObject.name.Replace(" ", "+");
-        return $"{prefabID}:{formattedName}:{rb.mass}:{transform.localScale.x}:{transform.localScale.y}:{pos0.x}:{pos0.y}:{vel0.x}:{vel0.y}:{acc0.x}:{acc0.y}:{xAxisIndex}:{yAxisIndex}:{boolToInt(isGraphing)}:{boolToInt(canRotate)}:{boolToInt(canTranslateX)}:{boolToInt(canTranslateY)}:{grapher.colorToInt(graphPointColor)}~";
+        return $"{prefabID}:{formattedName}:{rb.mass}:{transform.localScale.x}:{transform.localScale.y}:{pos0.x}:{pos0.y}:{vel0.x}:{vel0.y}:{acc0.x}:{acc0.y}:{xAxisIndex}:{yAxisIndex}:{boolToInt(isGraphing)}:{boolToInt(canRotate)}:{boolToInt(canTranslateX)}:{boolToInt(canTranslateY)}:{boolToInt(hasFriction)}:{grapher.colorToInt(graphPointColor)}~";
     } 
 
     // Start is called before the first frame update

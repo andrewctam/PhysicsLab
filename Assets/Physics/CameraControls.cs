@@ -15,24 +15,24 @@ public class CameraControls : MonoBehaviour
     void Start() {
         speed = 0.03f;
         cameraBounded = true;
-        xBoundMin = -100f;
-        xBoundMax = 100f;
+        xBoundMin = -100000f;
+        xBoundMax = 100000f;
         yBoundMin = -5f;
-        yBoundMax = 100f;
+        yBoundMax = 100000f;
     }
     
     void Update()
     {
         if (cameraBounded) {
             if (Camera.main.transform.position.x < xBoundMin)
-                Camera.main.transform.position = new Vector3(xBoundMin, Camera.main.transform.position.y, -1);
+                Camera.main.transform.position = new Vector3(xBoundMin, Camera.main.transform.position.y, -Camera.main.orthographicSize);
             if (Camera.main.transform.position.x > xBoundMax)
-                Camera.main.transform.position = new Vector3(xBoundMax, Camera.main.transform.position.y, -1);
+                Camera.main.transform.position = new Vector3(xBoundMax, Camera.main.transform.position.y, -Camera.main.orthographicSize);
 
             if (Camera.main.transform.position.y < yBoundMin)
-                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, yBoundMin, -1);
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, yBoundMin, -Camera.main.orthographicSize);
             if (Camera.main.transform.position.y > yBoundMax)
-                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, yBoundMax, -1);
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, yBoundMax, -Camera.main.orthographicSize);
         }
         
         interacting = EventSystem.current.IsPointerOverGameObject();
@@ -58,8 +58,7 @@ public class CameraControls : MonoBehaviour
                 Camera.main.orthographicSize += 0.1f;
 
             if (Input.GetKey(KeyCode.Z)) {
-                setCameraPosition(0f, 0f);
-                Camera.main.orthographicSize = 5f;
+                setCameraPosition(0f, 0f, -5f);
             }
         }
 
@@ -91,10 +90,13 @@ public class CameraControls : MonoBehaviour
         
     }
     
-    public Vector3 setCameraPosition (float x, float y) {
+    public Vector3 setCameraPosition (float x, float y, float zoom) {
         Vector3 oldPos = Camera.main.transform.position;
-        Camera.main.transform.position = new Vector3(x, y, -1f);
-        return oldPos;
+        float oldZoom = Camera.main.orthographicSize;
+        Camera.main.transform.position = new Vector3(x, y, zoom);
+        Camera.main.orthographicSize = -zoom;
+
+        return new Vector3(oldPos.x, oldPos.y, -oldZoom);
     }
 
     

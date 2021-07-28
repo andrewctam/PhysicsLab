@@ -136,6 +136,7 @@ MonoBehaviour:
   canTranslateY: 1
   isGraphing: 0
   draggable: 0
+  hasFriction: 0
   grapher: {fileID: 0}
   defaultColor: {r: 0, g: 0, b: 0, a: 0}
   alphaDefaultColor: {r: 0, g: 0, b: 0, a: 0}
@@ -153,7 +154,7 @@ CircleCollider2D:
   m_GameObject: {fileID: 6562412592464971139}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 831f2d76fe7e542d1a0688c49ad6dbe0, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
