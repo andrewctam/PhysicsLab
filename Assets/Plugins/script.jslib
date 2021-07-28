@@ -20,10 +20,10 @@ mergeInto(LibraryManager.library, {
     var loadOutput = prompt(msg, "");
 
     if (loadOutput != null && confirm("The current lab will be overwritten and deleted. Would you like to load a new lab?"))  {
-      var i = loadOutput.indexOf('?') + 1;
-      if (i != 1) 
-        loadOutput = loadOutput.substring(i);
-        
+      var i = loadOutput.indexOf('?');
+      if (i != -1) {
+        loadOutput = loadOutput.substring(i + 1);
+      }
       SendMessage('Canvas', 'loadLab', loadOutput);
     }
     
@@ -31,9 +31,9 @@ mergeInto(LibraryManager.library, {
   
   CheckForLoad: function () {
     var url = window.location.href;
-    var i = url.indexOf('?') + 1;
-    if (i != 1) {
-      url = url.substring(i);
+    var i = url.indexOf('?');
+    if (i != -1) {
+      url = url.substring(i + 1);
       SendMessage('Canvas', 'loadLab', url);
     }
 
