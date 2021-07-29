@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 public class CreateObjects : MonoBehaviour
 {
-    public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, toggleFrict, labGameObject, graphGameObject, toggleGraphingButton, labBar, graphBar, graphSettings, objectSelector, objectSelectorContainer;
+    public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, toggleFrict, labGameObject, graphGameObject, toggleGraphingButton, labBar, graphBar, graphSettingsButton, objectSelector, objectSelectorContainer;
     public TextMeshProUGUI objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText, selectorText;
     public TMP_InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, frictionInput, nameInput, selectorSearchInput;
     public List<GameObject> createdObjects, selectorsList, objectPrefabs;
@@ -288,25 +288,30 @@ public class CreateObjects : MonoBehaviour
             graphButtonText.text = "Graph Display";
 
             for (int i = 0; i < graphBar.transform.childCount; i++) {
-                graphBar.transform.GetChild(i).gameObject.SetActive(true);
-            }
-            
+                GameObject barChild = graphBar.transform.GetChild(i).gameObject;
+                if (barChild.name == "Object Specific Settings" ||
+                    barChild.name == "Global Settings" || 
+                    barChild.name == "Separator")
+                    barChild.SetActive(true);
+                else
+                    barChild.SetActive(false);            
+                }
+                       
         } else {   
             for (int i = 0; i < labGameObject.transform.childCount; i++)
                 labGameObject.transform.GetChild(i).GetComponent<Renderer>().enabled = false;
 
             graphGameObject.SetActive(true);
-    
             graphBar.SetActive(true);
             labBar.SetActive(false);
-            grapher.axisLabelsX.transform.parent.gameObject.SetActive(true);
             cameraSettings.cameraBounded = false;
             graphButtonText.text = "Lab Display";
             labCameraPos = cameraSettings.setCameraPosition(graphCameraPos.x, graphCameraPos.y, graphCameraPos.z);
             
             for (int i = 0; i < graphBar.transform.childCount; i++) {
                 GameObject barChild = graphBar.transform.GetChild(i).gameObject;
-                if (barChild.name == "Global Settings")
+                if (barChild.name == "Global Settings" ||
+                    barChild.name == "Graph Settings")
                     barChild.SetActive(true);
                 else
                     barChild.SetActive(false);
@@ -406,7 +411,7 @@ public class CreateObjects : MonoBehaviour
             
         createdObjects[current].GetComponent<SpriteRenderer>().color = currentPointMassScript.defaultColor;
         selectorsList[current].GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);
-        graphSettings.SetActive(currentPointMassScript.isGraphing);
+        graphSettingsButton.SetActive(currentPointMassScript.isGraphing);
         grapher.xAxisDropdown.value = currentPointMassScript.xAxisIndex;
         grapher.yAxisDropdown.value = currentPointMassScript.yAxisIndex;
         grapher.colorSlider.value = grapher.colorToInt(createdObjects[current].GetComponent<PointMass>().graphPointColor);
@@ -563,7 +568,6 @@ public class CreateObjects : MonoBehaviour
         
         string[] parts = inputString.Split('~');
         string[] settings = parts[0].Split(':');
-        Debug.Log(settings[0]);
 
         float g = float.Parse(settings[0]);
         Physics2D.gravity = new Vector3(0f, -g, 0f);
@@ -591,7 +595,6 @@ public class CreateObjects : MonoBehaviour
         string[] graphPoints = parts[1].Split(':');
         if (graphPoints[0] != "") {
             for (int i = 0; i < graphPoints.Length - 1; i+=3) {
-                Debug.Log(graphPoints[i] + ":" + graphPoints[i + 1] + ":" + graphPoints[i + 2]);
                 grapher.graphPoint(float.Parse(graphPoints[i]), 
                                    float.Parse(graphPoints[i + 1]), 
                                    grapher.intToColor(int.Parse(graphPoints[i + 2])));

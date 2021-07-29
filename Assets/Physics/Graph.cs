@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using System.Runtime.InteropServices;
 
 
 public class Graph : MonoBehaviour
@@ -18,6 +18,11 @@ public class Graph : MonoBehaviour
     public TMP_Dropdown xAxisDropdown, yAxisDropdown;
     public int minimumXAxis, minimumYAxis, step;
    
+
+    [DllImport("__Internal")]
+    private static extern void DownloadPoints(string csv);
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,6 +62,15 @@ public class Graph : MonoBehaviour
 
     }
 
+    public void exportToCSV() {
+        string csv = "";
+        Transform point;
+        for (int i = 0; i < points.transform.childCount; i++) {
+            point = points.transform.GetChild(i).transform;
+            csv += point.position.x + "," + point.position.y + "\n";
+        }
+        DownloadPoints(csv);
+    }
     public void deletePoints() {
         Destroy(points.gameObject);
         points = new GameObject("points");
@@ -70,12 +84,12 @@ public class Graph : MonoBehaviour
         GameObject currentGameObj = create.createdObjects[create.current];
         if (!currentGameObj.GetComponent<PointMass>().isGraphing) {
             graphedObjects.Add(currentGameObj);
-            create.graphSettings.SetActive(true);
+            create.graphSettingsButton.SetActive(true);
             currentGameObj.GetComponent<PointMass>().isGraphing = true;
             create.toggleGraphingButton.GetComponent<Image>().color = new Color(0.5f, 0.8f, 0.8f);
         } else {
             graphedObjects.Remove(currentGameObj);
-            create.graphSettings.SetActive(false);
+            create.graphSettingsButton.SetActive(false);
             currentGameObj.GetComponent<PointMass>().isGraphing = false;
             create.toggleGraphingButton.GetComponent<Image>().color = Color.white;
 
