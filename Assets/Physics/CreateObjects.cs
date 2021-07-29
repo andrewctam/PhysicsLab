@@ -301,6 +301,7 @@ public class CreateObjects : MonoBehaviour
             for (int i = 0; i < labGameObject.transform.childCount; i++)
                 labGameObject.transform.GetChild(i).GetComponent<Renderer>().enabled = false;
 
+            grapher.axisLabelsX.transform.parent.gameObject.SetActive(true);
             graphGameObject.SetActive(true);
             graphBar.SetActive(true);
             labBar.SetActive(false);
