@@ -10,7 +10,7 @@ public class CreateObjects : MonoBehaviour
 {
     public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, toggleFrict, labGameObject, graphGameObject, toggleGraphingButton, labBar, graphBar, graphSettingsButton, objectSelector, objectSelectorContainer;
     public TextMeshProUGUI objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText, selectorText;
-    public TMP_InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, frictionInput, nameInput, selectorSearchInput;
+    public TMP_InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, rotationInput, frictionInput, nameInput, selectorSearchInput;
     public List<GameObject> createdObjects, selectorsList, objectPrefabs;
     public Queue<GameObject> announcementQueue;
     public int indexOfLast, current, numObjects;
@@ -58,43 +58,48 @@ public class CreateObjects : MonoBehaviour
         elapsedTime += Time.deltaTime;
         timer.text = formatClock(elapsedTime, 3);
 
-        if (cameraSettings.keyboardAllowed && Input.GetKeyDown(KeyCode.R)) {
-            newUrgentAnnouncement("Lab Reset and Graph Cleared", 60);
-            elapsedTime = 0f;
-            started = false;
-            startLabButtonText.text = "Start"; 
-            PointMass currentObj;
-            for (int i = 0; i < indexOfLast + 1; i++)
-                if (createdObjects[i] != null) {
-                    currentObj = createdObjects[i].GetComponent<PointMass>();
-                    currentObj.gameObject.transform.position = currentObj.pos0;
-                    currentObj.started = false;
-                    }
-            Time.timeScale = 0;
-            grapher.deletePoints();
-            for (int i = 0; i < indexOfLast + 1; i++)
-                if (createdObjects[i] != null)
-                    createdObjects[i].transform.position = createdObjects[i].GetComponent<PointMass>().pos0;
+        if (cameraSettings.keyboardAllowed) {
+            if (Input.GetKeyDown(KeyCode.R)) {
+                newUrgentAnnouncement("Lab Reset and Graph Cleared", 60);
+                elapsedTime = 0f;
+                started = false;
+                startLabButtonText.text = "Start"; 
+                PointMass currentObj;
+                for (int i = 0; i < indexOfLast + 1; i++)
+                    if (createdObjects[i] != null) {
+                        currentObj = createdObjects[i].GetComponent<PointMass>();
+                        currentObj.gameObject.transform.position = currentObj.pos0;
+                        currentObj.started = false;
+                        }
+                Time.timeScale = 0;
+                grapher.deletePoints();
+                for (int i = 0; i < indexOfLast + 1; i++)
+                    if (createdObjects[i] != null)
+                        createdObjects[i].transform.position = createdObjects[i].GetComponent<PointMass>().pos0;
 
-                     for (int i = 0; i < indexOfLast + 1; i++)
-                if (createdObjects[i] != null)
-                    createdObjects[i].GetComponent<PointMass>().started = false;
-        }
-            
-        if (cameraSettings.keyboardAllowed && Input.GetKeyDown(KeyCode.Space))
-            if (started) {
-                togglePause();
-            } else {
-                startLab();
+                        for (int i = 0; i < indexOfLast + 1; i++)
+                    if (createdObjects[i] != null)
+                        createdObjects[i].GetComponent<PointMass>().started = false;
             }
-        
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            if (graphGameObject.activeSelf)
-                toggleGraph();
-            else if (graphBar.activeSelf)
-                toggleGraphSettings();
-            else if (editor.activeSelf)
-                closeEditor();
+                
+            if (Input.GetKeyDown(KeyCode.Space))
+                if (started) {
+                    togglePause();
+                } else {
+                    startLab();
+                }
+            
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                if (graphGameObject.activeSelf)
+                    toggleGraph();
+                else if (graphBar.activeSelf)
+                    toggleGraphSettings();
+                else if (editor.activeSelf)
+                    closeEditor();
+            }
+            
+            if (Input.GetKeyDown(KeyCode.U))
+                toggleUI();
         }
     }
 
@@ -120,7 +125,7 @@ public class CreateObjects : MonoBehaviour
     }
 
 
-
+    
     /*editor methods*/
 
     public void updateEarthGravity() {
@@ -200,6 +205,25 @@ public class CreateObjects : MonoBehaviour
         PointMass obj = createdObjects[current].GetComponent<PointMass>();
         obj.rb.velocity = obj.vel0;
     }
+
+    public void updateRotation() {
+        if (!newObjectSelected) {
+            string rotationInputted = rotationInput.text;
+            if (rotationInputted == "") {
+                rotationInputted = "0";
+            }
+            
+            createdObjects[current].GetComponent<PointMass>().initialRot = float.Parse(rotationInputted);
+            refreshRotation();
+            
+        }
+    }
+
+    public void refreshRotation() {
+        PointMass obj = createdObjects[current].GetComponent<PointMass>();
+        obj.transform.rotation = Quaternion.Euler(0, 0, obj.initialRot);
+    }
+
 
     public void updateName() {
         string inputtedName = nameInput.text;
@@ -363,14 +387,9 @@ public class CreateObjects : MonoBehaviour
         updateCurrent(-1);
     }
 
-    public void closeBar() {
-        if (bar.activeSelf) {
-            bar.SetActive(false);
-            UIToggleText.text = "Open UI";
-        } else {
-            bar.SetActive(true);
-            UIToggleText.text = "Close UI";
-        }
+    public void toggleUI() {
+        GameObject UI = transform.Find("UI").gameObject;
+        UI.SetActive(!UI.activeSelf);
     }
 
     /* methods that control the lab */
@@ -433,7 +452,8 @@ public class CreateObjects : MonoBehaviour
         vely.text = currentPointMassScript.vel0.y + "";
         accX.text = currentPointMassScript.acc0.x + "";
         accY.text = currentPointMassScript.acc0.y + "";
-        
+        rotationInput.text = currentPointMassScript.initialRot + "";
+
         //Update checkboxes
         toggleFrict.GetComponent<Toggle>().isOn = currentPointMassScript.hasFriction;
         toggleRot.GetComponent<Toggle>().isOn = !currentPointMassScript.canRotate; //not since the toggle is Lock Rotation
@@ -635,30 +655,31 @@ public class CreateObjects : MonoBehaviour
                 objScript.pos0 = new Vector3(float.Parse(currentObject[5]), float.Parse(currentObject[6]), 0f);
                 objScript.vel0 = new Vector3(float.Parse(currentObject[7]), float.Parse(currentObject[8]), 0f);
                 objScript.acc0 = new Vector3(float.Parse(currentObject[9]), float.Parse(currentObject[10]), 0f);
+                objScript.initialRot = float.Parse(currentObject[11]);
 
-                objScript.xAxisIndex = int.Parse(currentObject[11]);
-                objScript.yAxisIndex = int.Parse(currentObject[12]);
+                objScript.xAxisIndex = int.Parse(currentObject[12]);
+                objScript.yAxisIndex = int.Parse(currentObject[13]);
 
-                objScript.isGraphing = strToBool(currentObject[13]);
+                objScript.isGraphing = strToBool(currentObject[14]);
                 
-                objScript.canRotate = strToBool(currentObject[14]);
-                if (!strToBool(currentObject[14]))
+                objScript.canRotate = strToBool(currentObject[15]);
+                if (!strToBool(currentObject[15]))
                     createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints ^= RigidbodyConstraints2D.FreezeRotation;
 
-                objScript.canTranslateX = strToBool(currentObject[15]);
-                if (!strToBool(currentObject[15]))
+                objScript.canTranslateX = strToBool(currentObject[16]);
+                if (!strToBool(currentObject[16]))
                     createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints ^= RigidbodyConstraints2D.FreezePositionX;
 
 
-                objScript.canTranslateY = strToBool(currentObject[16]);
-                if (!strToBool(currentObject[16]))
+                objScript.canTranslateY = strToBool(currentObject[17]);
+                if (!strToBool(currentObject[17]))
                     createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints ^= RigidbodyConstraints2D.FreezePositionY;
 
 
                 
-                objScript.hasFriction = strToBool(currentObject[17]);
+                objScript.hasFriction = strToBool(currentObject[18]);
 
-                objScript.graphPointColor = grapher.intToColor(int.Parse(currentObject[18]));
+                objScript.graphPointColor = grapher.intToColor(int.Parse(currentObject[19]));
 
                 if (objScript.isGraphing)        
                     grapher.graphedObjects.Add(createdObjects[i - 2]);
@@ -680,6 +701,7 @@ public class CreateObjects : MonoBehaviour
             if (createdObjects[i] != null) {
                 currentObj = createdObjects[i].GetComponent<PointMass>();
                 currentObj.gameObject.transform.position = currentObj.pos0;
+                currentObj.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, currentObj.initialRot);
             }  
     } 
 }

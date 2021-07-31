@@ -15,11 +15,12 @@ public class PointMass : MonoBehaviour
     public Color defaultColor, alphaDefaultColor, graphPointColor;
     public Vector2 currentVelocity, velocityLastFrame, acceleration;
     public GameObject selector;
+    public float initialRot;
 
     public override string ToString() {
         int boolToInt(bool isTrue) { if (isTrue) return 1; else return 0; }
         string formattedName = gameObject.name.Replace(" ", "+");
-        return $"{prefabID}:{formattedName}:{rb.mass}:{transform.localScale.x}:{transform.localScale.y}:{pos0.x}:{pos0.y}:{vel0.x}:{vel0.y}:{acc0.x}:{acc0.y}:{xAxisIndex}:{yAxisIndex}:{boolToInt(isGraphing)}:{boolToInt(canRotate)}:{boolToInt(canTranslateX)}:{boolToInt(canTranslateY)}:{boolToInt(hasFriction)}:{grapher.colorToInt(graphPointColor)}~";
+        return $"{prefabID}:{formattedName}:{rb.mass}:{transform.localScale.x}:{transform.localScale.y}:{pos0.x}:{pos0.y}:{vel0.x}:{vel0.y}:{acc0.x}:{acc0.y}:{initialRot}:{xAxisIndex}:{yAxisIndex}:{boolToInt(isGraphing)}:{boolToInt(canRotate)}:{boolToInt(canTranslateX)}:{boolToInt(canTranslateY)}:{boolToInt(hasFriction)}:{grapher.colorToInt(graphPointColor)}~";
     } 
 
     // Start is called before the first frame update
@@ -85,8 +86,10 @@ public class PointMass : MonoBehaviour
 
     public void initiateMovement() {
         started = true;
+        rb.angularVelocity = 0;
         rb.position = pos0;
         rb.velocity = vel0;
+        rb.rotation = initialRot;
     }
 
     public void updatePosition(Vector3 pos) {
