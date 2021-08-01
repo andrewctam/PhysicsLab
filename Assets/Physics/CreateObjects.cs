@@ -649,7 +649,6 @@ public class CreateObjects : MonoBehaviour
                 createdObjects[i - 2].transform.localScale = new Vector3(float.Parse(currentObject[3]), float.Parse(currentObject[4]), 1f);
 
 
-                Debug.Log(currentObject[5] + " " + currentObject[6]);
                 objScript = createdObjects[i - 2].GetComponent<PointMass>();
                 objScript.ID = i - 2;
                 objScript.pos0 = new Vector3(float.Parse(currentObject[5]), float.Parse(currentObject[6]), 0f);
@@ -659,25 +658,23 @@ public class CreateObjects : MonoBehaviour
 
                 objScript.xAxisIndex = int.Parse(currentObject[12]);
                 objScript.yAxisIndex = int.Parse(currentObject[13]);
-
                 objScript.isGraphing = strToBool(currentObject[14]);
                 
                 objScript.canRotate = strToBool(currentObject[15]);
                 if (!strToBool(currentObject[15]))
-                    createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints ^= RigidbodyConstraints2D.FreezeRotation;
+                    createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints |= RigidbodyConstraints2D.FreezeRotation;
 
                 objScript.canTranslateX = strToBool(currentObject[16]);
                 if (!strToBool(currentObject[16]))
-                    createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints ^= RigidbodyConstraints2D.FreezePositionX;
+                    createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints |= RigidbodyConstraints2D.FreezePositionX;
 
 
                 objScript.canTranslateY = strToBool(currentObject[17]);
                 if (!strToBool(currentObject[17]))
-                    createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints ^= RigidbodyConstraints2D.FreezePositionY;
-
-
+                    createdObjects[i - 2].GetComponent<Rigidbody2D>().constraints |= RigidbodyConstraints2D.FreezePositionY;
                 
                 objScript.hasFriction = strToBool(currentObject[18]);
+
 
                 objScript.graphPointColor = grapher.intToColor(int.Parse(currentObject[19]));
 
