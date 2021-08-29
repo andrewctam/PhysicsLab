@@ -5,7 +5,7 @@ mergeInto(LibraryManager.library, {
 
     var msg = "Your lab has been saved in this link. You can reload a lab by going to this link or by clicking Load Lab and pasting this link into the prompt that will appear";
     if (saveStr.length > 2000) {
-      if (confirm("Warning: Your lab is to big to save in a link and will be saved to a text file and will be downloaded to your computer. To load your lab, copy all of the text in the text file and paste it prompt from the Load Lab button. Click OK to download the file, or click cancel")) {
+      if (confirm("Warning: Your lab is to big to save in a link and will be saved to a text file and will be downloaded to your computer. To load your lab, copy all of the text in the text file and paste it in the prompt from the Load Lab button. Click OK to download the file, or click cancel")) {
         var element = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(saveStr));
         element.setAttribute('download', "save");
