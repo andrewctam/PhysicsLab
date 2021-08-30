@@ -8,6 +8,7 @@ public class Announcement : MonoBehaviour
 {
     public int frame, framesToDestroy;
     public bool urgent;
+    public Slider progress; 
 
     void Start() {
         GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 100f);
@@ -15,6 +16,7 @@ public class Announcement : MonoBehaviour
     
     void Update() {
         frame++;
+        progress.value = ((float) frame / (float) framesToDestroy);
         if (frame > framesToDestroy)
             destroyNow();
     }
@@ -24,7 +26,7 @@ public class Announcement : MonoBehaviour
         gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = message; 
         framesToDestroy = frames;
 
-        if (urgent || FindObjectOfType<CreateObjects>().announcementQueue.Count == 1) //if urgent or this announcement is at the front of the queue 
+        if (urgent || FindObjectOfType<CreateObjects>().announcementQueue.Count == 1) //if urgent or this announcement is the only one in the queue 
             gameObject.SetActive(true);
         else
             gameObject.SetActive(false);
