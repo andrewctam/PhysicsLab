@@ -4649,6 +4649,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24b1ad7565c345545b478ddc946dc489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userInterface: {fileID: 79106076}
   announcementPrefab: {fileID: 856476661348764446, guid: 484f2d3100060e646acfb8eee27ce40c, type: 3}
   bar: {fileID: 1764869379}
   editor: {fileID: 2121242279}
@@ -22622,6 +22623,7 @@ SpriteRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1

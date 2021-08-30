@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 public class CreateObjects : MonoBehaviour
 {
-    public GameObject announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, toggleFrict, labGameObject, graphGameObject, toggleGraphingButton, labBar, graphBar, graphSettingsButton, objectSelector, objectSelectorContainer;
+    public GameObject userInterface, announcementPrefab, bar, editor, buttons, toggleX, toggleY, toggleRot, toggleFrict, labGameObject, graphGameObject, toggleGraphingButton, labBar, graphBar, graphSettingsButton, objectSelector, objectSelectorContainer;
     public TextMeshProUGUI objectIDText, timer, startLabButtonText, graphButtonText, UIToggleText, selectorText;
     public TMP_InputField gravityInput, timeScaleInput, massInput, widthInput, heightInput, posx, posy, velx, vely, accX, accY, rotationInput, frictionInput, nameInput, selectorSearchInput;
     public List<GameObject> createdObjects, selectorsList, objectPrefabs;
@@ -388,8 +388,7 @@ public class CreateObjects : MonoBehaviour
     }
 
     public void toggleUI() {
-        GameObject UI = transform.Find("UI").gameObject;
-        UI.SetActive(!UI.activeSelf);
+        userInterface.SetActive(!userInterface.activeSelf);
     }
 
     /* methods that control the lab */
